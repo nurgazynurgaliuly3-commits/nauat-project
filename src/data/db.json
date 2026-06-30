@@ -1,0 +1,167 @@
+{
+  "settings": {
+    "brandName": "Nauat",
+    "heroEyebrow": "Қазалы мұрасы бар премиум мейрамхана",
+    "heroTitle": "Nauat Мұра 2.0",
+    "heroText": "Дастархан, тарих және цифрлық музей бір кеңістікте тоғысатын Қазалы өңірінің мәдени мейрамханасы.",
+    "heroImage": "/images/nauat-heritage-hero.png",
+    "menuTitle": "Дәм мен дерек бір табақта",
+    "menuSubtitle": "Мәзір",
+    "heritageTitle": "Қазалы мұрасын дастарханнан ашыңыз",
+    "heritageSubtitle": "Цифрлық музей",
+    "bookingTitle": "Қонағыңызға мұралы кеш сыйлаңыз",
+    "bookingText": "Өтінімдер жергілікті дерек файлына сақталады. Кейін оны қоңырау қабылдау жүйесіне немесе ортақ дерек қоймасына қосуға болады.",
+    "colors": {
+      "background": "#120f0b",
+      "surface": "#2a1a11",
+      "text": "#f7f1e7",
+      "muted": "#efe3d0",
+      "gold": "#c59b56",
+      "green": "#173d31",
+      "light": "#f7f1e7",
+      "dark": "#120f0b"
+    },
+    "sections": [
+      {
+        "id": "culture",
+        "title": "Мәдени асхана",
+        "text": "Әр тағам Қазалы өңірінің тарихымен байланыстырылған.",
+        "image": "/images/nauat-heritage-hero.png",
+        "enabled": true
+      },
+      {
+        "id": "museum",
+        "title": "Цифрлық музей",
+        "text": "QR арқылы тарихи орындар мен тұлғалар беті ашылады.",
+        "image": "/images/nauat-heritage-hero.png",
+        "enabled": true
+      },
+      {
+        "id": "service",
+        "title": "Премиум қызмет",
+        "text": "Жинақы интерфейс, таза брондау және мұралы мәзір.",
+        "image": "/images/nauat-heritage-hero.png",
+        "enabled": true
+      }
+    ],
+    "visibility": {
+      "introCards": true,
+      "menu": true,
+      "heritage": true,
+      "customSections": true,
+      "booking": true
+    }
+  },
+  "menuItems": [
+    {
+      "id": "m1",
+      "name": "Ұлпершек",
+      "category": "Мұра тағамдары",
+      "description": "Жүрек етінен әзірленетін, сағыныш пен құрметті білдіретін дәстүрлі ас.",
+      "price": 4200,
+      "image": "/images/nauat-heritage-hero.png",
+      "heritage": true
+    },
+    {
+      "id": "m2",
+      "name": "Қазалы ет табағы",
+      "category": "Негізгі тағамдар",
+      "description": "Жайылған қамыр, қазы, жая және сорпа иісі үйлескен қонақасы.",
+      "price": 6900,
+      "image": "/images/nauat-heritage-hero.png",
+      "heritage": true
+    },
+    {
+      "id": "m3",
+      "name": "Сыр шайы",
+      "category": "Сусындар",
+      "description": "Сүт қатқан қою шай, бауырсақ және қант-науатпен ұсынылады.",
+      "price": 1800,
+      "image": "/images/nauat-heritage-hero.png",
+      "heritage": false
+    },
+    {
+      "id": "m4",
+      "name": "Алтын бауырсақ",
+      "category": "Тәттілер",
+      "description": "Бал мен қаймаққа үйлесетін жеңіл, жылы бауырсақ.",
+      "price": 1600,
+      "image": "/images/nauat-heritage-hero.png",
+      "heritage": false
+    }
+  ],
+  "heritageItems": [
+    {
+      "slug": "jankent",
+      "category": "Тарихи орындар",
+      "title": { "kk": "Жанкент қалашығы", "ru": "Городище Жанкент", "en": "Jankent Settlement" },
+      "short": {
+        "kk": "Сыр бойындағы оғыз дәуірінің ірі орталықтарының бірі.",
+        "ru": "Один из крупных центров огузской эпохи в низовьях Сырдарьи.",
+        "en": "One of the major Oghuz-era centers along the Syr Darya."
+      },
+      "body": {
+        "kk": "Жанкент Қазалы өңірінің терең тарихи қабатын көрсететін мекен. Қалашық туралы деректер Сыр бойындағы сауда, қолөнер және көшпелі өркениет байланысын айқын сездіреді. Nauat-та бұл мұра қонаққа тағам арқылы да, цифрлық музей арқылы да таныстырылады.",
+        "ru": "Жанкент показывает глубокий исторический слой Казалинского региона. История городища раскрывает связь торговли, ремесла и кочевой культуры на Сырдарье.",
+        "en": "Jankent reflects the deep historical layers of the Kazaly region, connecting trade, craft, and nomadic culture along the Syr Darya."
+      },
+      "facts": ["Оғыз дәуірімен байланысты", "Сыр бойындағы керуен жолдарына жақын", "Қазалы өңірінің басты археологиялық нысандарының бірі"],
+      "relatedMenuIds": ["m2", "m3"],
+      "image": "/images/nauat-heritage-hero.png"
+    },
+    {
+      "slug": "ghani-muratbayev",
+      "category": "Тұлғалар",
+      "title": { "kk": "Ғани Мұратбаев", "ru": "Гани Муратбаев", "en": "Ghani Muratbayev" },
+      "short": {
+        "kk": "Жастар қозғалысының жарқын өкілі, елдік санаға қызмет еткен тұлға.",
+        "ru": "Яркий представитель молодежного движения и общественной мысли.",
+        "en": "A prominent youth movement figure devoted to public progress."
+      },
+      "body": {
+        "kk": "Ғани Мұратбаев есімі Қазалы жұрты үшін білім, жігер және қоғамға қызмет ету ұғымдарымен байланысты. Оның мұрасы жас ұрпаққа жауапкершілік пен елге адалдық идеясын жеткізеді.",
+        "ru": "Имя Гани Муратбаева связано с образованием, энергией и служением обществу.",
+        "en": "Ghani Muratbayev's legacy is associated with education, civic energy, and service to society."
+      },
+      "facts": ["Қазалы өңірімен тығыз байланысты", "Жастарға арналған мәдени маршрутқа лайық тұлға", "Музейлік әңгімелеуге бай дерек көзі"],
+      "relatedMenuIds": ["m3", "m4"],
+      "image": "/images/nauat-heritage-hero.png"
+    },
+    {
+      "slug": "zhankozha-batyr",
+      "category": "Тұлғалар",
+      "title": { "kk": "Жанқожа батыр", "ru": "Жанкожа батыр", "en": "Zhankozha Batyr" },
+      "short": {
+        "kk": "Ел қорғаны ретінде танылған батырлық дәстүрдің биік бейнесі.",
+        "ru": "Образ защитника народа и символ героической традиции.",
+        "en": "A symbol of heroic tradition and defense of the people."
+      },
+      "body": {
+        "kk": "Жанқожа батыр туралы әңгімелер Қазалы өңірінің рухани жадында ерекше орын алады. Nauat мұндай тұлғаларды заманауи форматта таныстырып, дастархан мәдениетімен байланыстырады.",
+        "ru": "Истории о Жанкоже батыре занимают особое место в духовной памяти региона.",
+        "en": "Stories of Zhankozha Batyr hold a special place in the region's cultural memory."
+      },
+      "facts": ["Халық жадындағы батыр", "Елдік пен ерлік символы", "Мұра маршрутының негізгі нысаны"],
+      "relatedMenuIds": ["m2"],
+      "image": "/images/nauat-heritage-hero.png"
+    },
+    {
+      "slug": "ulpershek",
+      "category": "Ұлттық тағамдар",
+      "title": { "kk": "Ұлпершек", "ru": "Улпершек", "en": "Ulpershek" },
+      "short": {
+        "kk": "Сағыныш пен сыйластық мағынасын сақтаған ерекше ұлттық тағам.",
+        "ru": "Особое национальное блюдо со смыслом уважения и родственной памяти.",
+        "en": "A meaningful national dish associated with respect and remembrance."
+      },
+      "body": {
+        "kk": "Ұлпершек дәстүрлі дастарханда тек дәм емес, ишара мен сезім тілі ретінде қабылданған. Қызын сағынған ата-ана жіберетін бұл ас Nauat мәзірінде мұра белгісімен ұсынылады.",
+        "ru": "Улпершек в традиции воспринимался не только как еда, но и как знак чувства.",
+        "en": "Ulpershek is more than food; in tradition it carries an emotional message of respect and longing."
+      },
+      "facts": ["Жүрек етінен дайындалады", "Отбасылық сағыныш символы", "Nauat-та мұра тағамы ретінде көрсетіледі"],
+      "relatedMenuIds": ["m1"],
+      "image": "/images/nauat-heritage-hero.png"
+    }
+  ]
+}
