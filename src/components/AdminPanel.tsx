@@ -1,14 +1,36 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff, ImagePlus, Palette, Plus, QrCode, Save, Trash2, UtensilsCrossed } from "lucide-react";
+import {
+  CalendarDays,
+  Camera,
+  ClipboardList,
+  ExternalLink,
+  Eye,
+  EyeOff,
+  FileText,
+  Image as ImageIcon,
+  LayoutDashboard,
+  Package,
+  Palette,
+  Plus,
+  QrCode,
+  Save,
+  Settings,
+  Trash2,
+  UserRound,
+  Users,
+  UtensilsCrossed
+} from "lucide-react";
 import type { HeritageItem, HeritageMenuItem, NauatDb, SiteSection, SiteSettings } from "@/lib/types";
-import { Button } from "@/components/Buttons";
 import { QrTools } from "@/components/QrTools";
 
-const inputClass = "w-full rounded-md border border-white/15 bg-white/5 px-3 py-3 text-porcelain outline-none transition focus:border-gold";
-const selectClass = "w-full rounded-md border border-white/15 bg-ink px-3 py-3 text-porcelain outline-none transition focus:border-gold";
+const inputClass = "w-full rounded-md border border-[#e5e7eb] bg-white px-3 py-2.5 text-sm text-[#111827] outline-none transition focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/15";
+const selectClass = inputClass;
+const cardClass = "rounded-md border border-[#e5e7eb] bg-white";
+const accent = "#7c3aed";
 const fallbackImage = "/images/nauat-heritage-hero.png";
+const siteUrl = "https://nauat-project.vercel.app";
 const heritageCategories = ["Тарихи орындар", "Тұлғалар", "Жәдігерлер", "Ұлттық тағам тарихы"];
 const heritageMenuCategories = ["Ұлттық тағамдар", "Қазалы мұрасынан шабыт алған тағамдар", "Тарихи тұлғаларға арналған тағамдар", "Арнайы сеттер", "Дәстүрлі сусындар", "Десерттер"];
 
@@ -42,24 +64,59 @@ const blankHeritageMenuItem: HeritageMenuItem = {
   updatedAt: ""
 };
 
+type AdminTab = "home" | "content" | "heritage" | "menu" | "orders" | "booking" | "users" | "settings" | "qr";
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="grid gap-1 text-sm text-linen">
+    <label className="grid gap-1 text-sm text-[#374151]">
       <span>{label}</span>
       {children}
     </label>
   );
 }
 
+function PrimaryButton({ children, onClick, type = "button" }: { children: React.ReactNode; onClick?: () => void; type?: "button" | "submit" }) {
+  return (
+    <button type={type} onClick={onClick} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-[#7c3aed] bg-[#7c3aed] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#6d28d9]">
+      {children}
+    </button>
+  );
+}
+
+function SoftButton({ children, onClick, type = "button" }: { children: React.ReactNode; onClick?: () => void; type?: "button" | "submit" }) {
+  return (
+    <button type={type} onClick={onClick} className="inline-flex min-h-10 items-center justify-center gap-2 rounded-md border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-semibold text-[#111827] transition hover:border-[#7c3aed]/60 hover:bg-[#f5f3ff]">
+      {children}
+    </button>
+  );
+}
+
 function Panel({ title, text, children }: { title: string; text?: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-md border border-white/10 bg-white/[0.04] p-5">
+    <section className={`${cardClass} p-5`}>
       <div className="mb-5">
-        <h2 className="font-[var(--font-display)] text-3xl font-semibold">{title}</h2>
-        {text ? <p className="mt-1 text-sm leading-6 text-linen/70">{text}</p> : null}
+        <h2 className="text-lg font-semibold text-[#111827]">{title}</h2>
+        {text ? <p className="mt-1 text-sm leading-6 text-[#6b7280]">{text}</p> : null}
       </div>
       {children}
     </section>
+  );
+}
+
+function StatCard({ icon: Icon, label, value, note }: { icon: typeof FileText; label: string; value: number | string; note: string }) {
+  return (
+    <div className={`${cardClass} p-5`}>
+      <div className="flex items-center gap-4">
+        <span className="grid h-14 w-14 place-items-center rounded-md bg-[#f3efff] text-[#7c3aed]">
+          <Icon size={26} />
+        </span>
+        <div>
+          <p className="text-sm text-[#6b7280]">{label}</p>
+          <p className="mt-1 text-3xl font-semibold text-[#111827]">{value}</p>
+          <p className="mt-1 text-sm text-[#6b7280]">{note}</p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -77,7 +134,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
   const [settings, setSettings] = useState<SiteSettings>(initialDb.settings);
   const [heritage, setHeritage] = useState<HeritageItem>(blankHeritage);
   const [heritageMenuItem, setHeritageMenuItem] = useState<HeritageMenuItem>(blankHeritageMenuItem);
-  const [activeTab, setActiveTab] = useState<"site" | "heritage" | "menu" | "qr">("site");
+  const [activeTab, setActiveTab] = useState<AdminTab>("home");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -87,6 +144,8 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
 
   const heritageOptions = useMemo(() => db.heritageItems.filter((item) => item.status !== "hidden"), [db.heritageItems]);
   const selectedQr = heritage.slug ? heritage : heritageOptions[0];
+  const publishedMenuCount = db.heritageMenuItems.filter((item) => item.status === "published").length;
+  const activeHeritageCount = db.heritageItems.filter((item) => item.status !== "hidden").length;
 
   async function persist(nextDb: NauatDb) {
     setMessage("Сақталуда...");
@@ -142,6 +201,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
       enabled: true
     };
     setSettings({ ...settings, sections: [...settings.sections, section] });
+    setActiveTab("content");
   }
 
   function updateSection(id: string, patch: Partial<SiteSection>) {
@@ -214,95 +274,148 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
     if (heritageMenuItem.id === id) setHeritageMenuItem(blankHeritageMenuItem);
   }
 
-  const tabs = [
-    { id: "site", label: "Сайт", icon: Palette },
-    { id: "heritage", label: "Мұра объектілері", icon: QrCode },
-    { id: "menu", label: "Мұра мәзірі", icon: UtensilsCrossed },
-    { id: "qr", label: "QR кодтар", icon: QrCode }
-  ] as const;
+  const tabs: Array<{ id: AdminTab; label: string; icon: typeof LayoutDashboard }> = [
+    { id: "home", label: "Басты бет", icon: LayoutDashboard },
+    { id: "content", label: "Мазмұн", icon: FileText },
+    { id: "heritage", label: "Heritage объектілер", icon: Package },
+    { id: "menu", label: "Мәзір", icon: UtensilsCrossed },
+    { id: "orders", label: "Тапсырыстар", icon: ClipboardList },
+    { id: "booking", label: "Брондау", icon: CalendarDays },
+    { id: "users", label: "Пайдаланушылар", icon: Users },
+    { id: "settings", label: "Баптаулар", icon: Settings }
+  ];
+
+  const quickActions = [
+    { label: "Жаңа Heritage объект қосу", icon: Package, action: () => { setHeritage(blankHeritage); setActiveTab("heritage"); } },
+    { label: "Жаңа мәзір тағамы", icon: UtensilsCrossed, action: () => { setHeritageMenuItem(blankHeritageMenuItem); setActiveTab("menu"); } },
+    { label: "Жаңа тапсырыс", icon: ClipboardList, action: () => setActiveTab("orders") },
+    { label: "Жаңа брондау", icon: CalendarDays, action: () => setActiveTab("booking") },
+    { label: "Жаңа парақ қосу", icon: FileText, action: addSection },
+    { label: "Жаңалық жариялау", icon: ExternalLink, action: () => setActiveTab("content") },
+    { label: "Галереяға фото қосу", icon: Camera, action: () => setActiveTab("content") },
+    { label: "Пайдаланушы қосу", icon: UserRound, action: () => setActiveTab("users") }
+  ];
+
+  const modules = [
+    { title: "Мазмұн", text: "Сайттың беттерін, мәтіндерін және бөлімдерін басқару", icon: FileText, tab: "content" as AdminTab },
+    { title: "Heritage объектілер", text: "Тарихи орындар, тұлғалар, жәдігерлер және мұралар", icon: Package, tab: "heritage" as AdminTab },
+    { title: "Мәзір", text: "Қазалы мұрасы мәзіріндегі тағамдарды басқару", icon: UtensilsCrossed, tab: "menu" as AdminTab },
+    { title: "Тапсырыстар", text: "Клиенттердің тапсырыстарын қарау және басқару", icon: ClipboardList, tab: "orders" as AdminTab },
+    { title: "Брондау", text: "Үстел брондауларын қарау және басқару", icon: CalendarDays, tab: "booking" as AdminTab },
+    { title: "Галерея", text: "Суреттер мен галереяларды басқару", icon: ImageIcon, tab: "content" as AdminTab },
+    { title: "Пайдаланушылар", text: "Админдер мен пайдаланушыларды басқару", icon: Users, tab: "users" as AdminTab },
+    { title: "Баптаулар", text: "Сайт параметрлері және жалпы баптаулар", icon: Settings, tab: "settings" as AdminTab }
+  ];
 
   return (
-    <div className="grid gap-6">
-      <div className="flex flex-wrap gap-2 rounded-md border border-white/10 bg-white/[0.04] p-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setActiveTab(tab.id)}
-              className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm transition ${activeTab === tab.id ? "bg-gold text-ink" : "text-linen/75 hover:bg-white/10"}`}
-            >
-              <Icon size={16} /> {tab.label}
-            </button>
-          );
-        })}
-      </div>
+    <div className="min-h-screen rounded-md border border-[#d1d5db] bg-white text-[#111827]">
+      <header className="flex flex-col gap-3 border-b border-[#e5e7eb] px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
+        <a href={siteUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-3 text-sm text-[#111827]">
+          <span className="grid h-9 w-9 place-items-center rounded-md border border-[#e5e7eb] text-[#111827]">
+            <ExternalLink size={17} />
+          </span>
+          <span>
+            <span className="block font-semibold">Сайтқа өту</span>
+            <span className="text-xs text-[#6b7280]">{siteUrl}</span>
+          </span>
+        </a>
+        <nav className="flex gap-1 overflow-x-auto text-sm">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`inline-flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 font-medium transition ${
+                  activeTab === tab.id ? "border-[#7c3aed] text-[#7c3aed]" : "border-transparent text-[#111827] hover:text-[#7c3aed]"
+                }`}
+              >
+                <Icon size={16} /> {tab.label}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="hidden h-10 w-10 place-items-center rounded-full border border-[#111827] lg:grid">
+          <UserRound size={22} />
+        </div>
+      </header>
 
-      {activeTab === "site" ? (
-        <Panel title="Сайт көрінісі" text="Басты экран, түстер, Dzumba сілтемесі және бөлімдердің көрінуі осы жерден басқарылады.">
-          <form className="grid gap-6" onSubmit={saveSettings}>
-            <div className="grid gap-3 md:grid-cols-2">
-              <Field label="Бренд атауы"><input className={inputClass} value={settings.brandName} onChange={(e) => setSettings({ ...settings, brandName: e.target.value })} /></Field>
-              <Field label="Негізгі мәзір сілтемесі (Dzumba)"><input className={inputClass} value={settings.dzumbaMenuUrl} onChange={(e) => setSettings({ ...settings, dzumbaMenuUrl: e.target.value })} /></Field>
-              <Field label="Басты белгі мәтіні"><input className={inputClass} value={settings.heroEyebrow} onChange={(e) => setSettings({ ...settings, heroEyebrow: e.target.value })} /></Field>
-              <Field label="Басты тақырып"><input className={inputClass} value={settings.heroTitle} onChange={(e) => setSettings({ ...settings, heroTitle: e.target.value })} /></Field>
-            </div>
-            <Field label="Басты сипаттама"><textarea className={`${inputClass} min-h-24`} value={settings.heroText} onChange={(e) => setSettings({ ...settings, heroText: e.target.value })} /></Field>
-            <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
-              <Field label="Басты фото жолы"><input className={inputClass} value={settings.heroImage} onChange={(e) => setSettings({ ...settings, heroImage: e.target.value })} /></Field>
-              <label className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-md border border-white/15 px-4 text-sm text-linen hover:border-gold/70">
-                <ImagePlus size={16} /> Фото жүктеу
+      <div className="px-5 py-7">
+        {activeTab === "home" ? (
+          <div className="grid gap-6">
+            <section>
+              <h1 className="text-2xl font-semibold">Қош келдіңіз, Админ!</h1>
+              <p className="mt-2 text-sm text-[#6b7280]">Nauat Heritage 2.0 админ панеліне қош келдіңіз</p>
+            </section>
+            <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              <StatCard icon={Package} label="Heritage объектілер" value={activeHeritageCount} note="Барлығы" />
+              <StatCard icon={UtensilsCrossed} label="Мәзір тағамдары" value={publishedMenuCount} note="Жарияланған" />
+              <StatCard icon={ClipboardList} label="Тапсырыстар" value="0" note="Жаңа тапсырыс" />
+              <StatCard icon={CalendarDays} label="Брондау" value="0" note="Бүгінгі брондау" />
+            </section>
+            <Panel title="Жылдам әрекеттер">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  return (
+                    <button key={action.label} type="button" onClick={action.action} className="flex items-center gap-4 rounded-md border border-[#e5e7eb] bg-white px-5 py-4 text-left transition hover:border-[#7c3aed]/50 hover:bg-[#faf9ff]">
+                      <Icon size={21} color={accent} />
+                      <span className="text-sm font-medium">{action.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </Panel>
+            <Panel title="Басқару модульдері">
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                {modules.map((module) => {
+                  const Icon = module.icon;
+                  return (
+                    <button key={module.title} type="button" onClick={() => setActiveTab(module.tab)} className="flex gap-4 rounded-md border border-[#e5e7eb] bg-white p-5 text-left transition hover:border-[#7c3aed]/50 hover:bg-[#faf9ff]">
+                      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-md bg-[#f3efff] text-[#7c3aed]">
+                        <Icon size={24} />
+                      </span>
+                      <span>
+                        <span className="block font-semibold">{module.title}</span>
+                        <span className="mt-2 block text-sm leading-6 text-[#6b7280]">{module.text}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </Panel>
+          </div>
+        ) : null}
+
+        {activeTab === "content" ? (
+          <Panel title="Мазмұн" text="Сайттың мәтіндері, басты экраны және қосымша бөлімдері осы жерде басқарылады.">
+            <form className="grid gap-5" onSubmit={saveSettings}>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Field label="Бренд атауы"><input className={inputClass} value={settings.brandName} onChange={(e) => setSettings({ ...settings, brandName: e.target.value })} /></Field>
+                <Field label="Басты белгі мәтіні"><input className={inputClass} value={settings.heroEyebrow} onChange={(e) => setSettings({ ...settings, heroEyebrow: e.target.value })} /></Field>
+                <Field label="Басты тақырып"><input className={inputClass} value={settings.heroTitle} onChange={(e) => setSettings({ ...settings, heroTitle: e.target.value })} /></Field>
+                <Field label="Басты фото жолы"><input className={inputClass} value={settings.heroImage} onChange={(e) => setSettings({ ...settings, heroImage: e.target.value })} /></Field>
+              </div>
+              <Field label="Басты сипаттама"><textarea className={`${inputClass} min-h-24`} value={settings.heroText} onChange={(e) => setSettings({ ...settings, heroText: e.target.value })} /></Field>
+              <label className="inline-flex min-h-10 w-fit cursor-pointer items-center justify-center gap-2 rounded-md border border-[#e5e7eb] bg-white px-4 text-sm font-semibold hover:border-[#7c3aed]/60 hover:bg-[#f5f3ff]">
+                <Camera size={16} /> Фото жүктеу
                 <input className="hidden" type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "settings")} />
               </label>
-            </div>
 
-            <div>
-              <h3 className="mb-3 font-[var(--font-display)] text-2xl">Түстер</h3>
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {Object.entries(settings.colors).map(([key, value]) => (
-                  <Field label={key} key={key}>
-                    <div className="flex gap-2">
-                      <input className="h-12 w-14 rounded-md border border-white/15 bg-transparent" type="color" value={value} onChange={(e) => setSettings({ ...settings, colors: { ...settings.colors, [key]: e.target.value } })} />
-                      <input className={`${inputClass} min-w-0 flex-1`} value={value} onChange={(e) => setSettings({ ...settings, colors: { ...settings.colors, [key]: e.target.value } })} />
-                    </div>
-                  </Field>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="mb-3 font-[var(--font-display)] text-2xl">Бөлімдерді қосу/өшіру</h3>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  ["introCards", "Кіріспе карточкалар"],
-                  ["menu", "Қазалы мұрасы мәзірі"],
-                  ["heritage", "Мұра жобасы"],
-                  ["customSections", "Қосымша бөлімдер"],
-                  ["booking", "Байланыс/брондау"]
-                ].map(([key, label]) => (
-                  <button className="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-2 text-sm" type="button" key={key} onClick={() => toggleVisibility(key as keyof SiteSettings["visibility"])}>
-                    {settings.visibility[key as keyof SiteSettings["visibility"]] ? <Eye size={16} /> : <EyeOff size={16} />}
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-3 flex items-center justify-between gap-3">
-                <h3 className="font-[var(--font-display)] text-2xl">Қосымша бөлімдер</h3>
-                <Button onClick={addSection} tone="ghost"><Plus className="mr-2" size={16} /> Бөлім қосу</Button>
-              </div>
               <div className="grid gap-4">
+                <div className="flex items-center justify-between gap-3">
+                  <h3 className="text-lg font-semibold">Қосымша бөлімдер</h3>
+                  <SoftButton onClick={addSection}><Plus size={16} /> Бөлім қосу</SoftButton>
+                </div>
                 {settings.sections.map((section) => (
-                  <article className="rounded-md border border-white/10 bg-black/18 p-4" key={section.id}>
+                  <article className="rounded-md border border-[#e5e7eb] bg-[#fafafa] p-4" key={section.id}>
                     <div className="mb-3 flex flex-wrap justify-between gap-3">
-                      <label className="flex items-center gap-2 text-sm text-linen">
+                      <label className="flex items-center gap-2 text-sm text-[#374151]">
                         <input type="checkbox" checked={section.enabled} onChange={(e) => updateSection(section.id, { enabled: e.target.checked })} />
                         Сайтта көрсету
                       </label>
-                      <button className="inline-flex items-center gap-2 rounded-md border border-red-400/40 px-3 py-2 text-sm text-red-200" type="button" onClick={() => deleteSection(section.id)}>
+                      <button className="inline-flex items-center gap-2 rounded-md border border-red-200 px-3 py-2 text-sm text-red-600" type="button" onClick={() => deleteSection(section.id)}>
                         <Trash2 size={16} /> Өшіру
                       </button>
                     </div>
@@ -314,111 +427,147 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
                   </article>
                 ))}
               </div>
-            </div>
-
-            <Button type="submit" tone="gold"><Save className="mr-2" size={16} /> Сайт баптауларын сақтау</Button>
-          </form>
-        </Panel>
-      ) : null}
-
-      {activeTab === "heritage" ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-          <Panel title="Мұра объектісі" text="Тарихи орын, тұлға, жәдігер немесе ұлттық тағам тарихын үш тілде енгізіңіз.">
-            <form className="grid gap-3" onSubmit={saveHeritage}>
-              <div className="grid gap-3 md:grid-cols-3">
-                <Field label="URL атауы"><input className={inputClass} placeholder="jankent" value={heritage.slug} onChange={(e) => setHeritage({ ...heritage, slug: e.target.value })} required /></Field>
-                <Field label="Категория"><select className={selectClass} value={heritage.category} onChange={(e) => setHeritage({ ...heritage, category: e.target.value })}>{heritageCategories.map((category) => <option key={category}>{category}</option>)}</select></Field>
-                <Field label="Күйі"><select className={selectClass} value={heritage.status || "published"} onChange={(e) => setHeritage({ ...heritage, status: e.target.value as HeritageItem["status"] })}><option value="published">Жариялау</option><option value="draft">Жоба күйі</option><option value="hidden">Жасыру</option></select></Field>
-              </div>
-              <div className="grid gap-3 md:grid-cols-3">
-                <Field label="Қазақ тілі"><input className={inputClass} value={heritage.title.kk} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, kk: e.target.value } })} required /></Field>
-                <Field label="Русский"><input className={inputClass} value={heritage.title.ru} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, ru: e.target.value } })} /></Field>
-                <Field label="English"><input className={inputClass} value={heritage.title.en} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, en: e.target.value } })} /></Field>
-              </div>
-              <div className="grid gap-3 md:grid-cols-3">
-                <Field label="Қазақ тілі - қысқа мәтін"><textarea className={`${inputClass} min-h-24`} value={heritage.short.kk} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, kk: e.target.value } })} /></Field>
-                <Field label="Русский - қысқа мәтін"><textarea className={`${inputClass} min-h-24`} value={heritage.short.ru} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, ru: e.target.value } })} /></Field>
-                <Field label="English - short text"><textarea className={`${inputClass} min-h-24`} value={heritage.short.en} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, en: e.target.value } })} /></Field>
-              </div>
-              <div className="grid gap-3 md:grid-cols-3">
-                <Field label="Қазақ тілі - толық мәтін"><textarea className={`${inputClass} min-h-40`} value={heritage.body.kk} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, kk: e.target.value } })} /></Field>
-                <Field label="Русский - полный текст"><textarea className={`${inputClass} min-h-40`} value={heritage.body.ru} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, ru: e.target.value } })} /></Field>
-                <Field label="English - full text"><textarea className={`${inputClass} min-h-40`} value={heritage.body.en} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, en: e.target.value } })} /></Field>
-              </div>
-              <Field label="Қызықты деректер, үтірмен бөліңіз"><input className={inputClass} value={heritage.facts.join(", ")} onChange={(e) => setHeritage({ ...heritage, facts: e.target.value.split(",").map((value) => value.trim()) })} /></Field>
-              <Field label="Фото жолы"><input className={inputClass} value={heritage.image} onChange={(e) => setHeritage({ ...heritage, image: e.target.value })} /></Field>
-              <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritage")} />
-              <div className="flex flex-wrap gap-3">
-                <Button type="submit" tone="gold"><Save className="mr-2" size={16} /> Сақтау</Button>
-                <Button onClick={() => setHeritage(blankHeritage)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа объект</Button>
-                {heritage.slug ? <Button onClick={() => deleteHeritage(heritage.slug)} tone="ghost"><Trash2 className="mr-2" size={16} /> Өшіру</Button> : null}
-              </div>
+              <PrimaryButton type="submit"><Save size={16} /> Мазмұнды сақтау</PrimaryButton>
             </form>
           </Panel>
-          <Panel title="Объектілер тізімі">
-            <div className="grid gap-2">
-              {db.heritageItems.map((item) => (
-                <button key={item.slug} className="rounded-md border border-white/10 bg-white/5 px-3 py-3 text-left hover:border-gold/60" onClick={() => setHeritage(item)}>
-                  <span className="font-semibold">{item.title.kk}</span> <span className="text-linen/60">/{item.slug}</span>
-                </button>
-              ))}
-            </div>
-          </Panel>
-        </div>
-      ) : null}
+        ) : null}
 
-      {activeTab === "menu" ? (
-        <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-          <Panel title="Қазалы мұрасы мәзірі" text="Бұл Dzumba мәзірі емес. Тек сайт ішіндегі арнайы heritage тағамдары.">
-            <form className="grid gap-3" onSubmit={saveHeritageMenuItem}>
-              <div className="grid gap-3 md:grid-cols-2">
-                <Field label="Тағам атауы"><input className={inputClass} value={heritageMenuItem.title} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, title: e.target.value })} required /></Field>
-                <Field label="URL атауы"><input className={inputClass} placeholder="jankent-set" value={heritageMenuItem.slug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, slug: e.target.value })} /></Field>
-                <Field label="Категория"><select className={selectClass} value={heritageMenuItem.category} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, category: e.target.value })}>{heritageMenuCategories.map((category) => <option key={category}>{category}</option>)}</select></Field>
-                <Field label="Баға"><input className={inputClass} type="number" value={heritageMenuItem.price} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, price: Number(e.target.value) })} /></Field>
+        {activeTab === "heritage" ? (
+          <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
+            <Panel title="Heritage объектілер" text="Тарихи орын, тұлға, жәдігер немесе ұлттық тағам тарихын үш тілде енгізіңіз.">
+              <form className="grid gap-3" onSubmit={saveHeritage}>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <Field label="URL атауы"><input className={inputClass} placeholder="jankent" value={heritage.slug} onChange={(e) => setHeritage({ ...heritage, slug: e.target.value })} required /></Field>
+                  <Field label="Категория"><select className={selectClass} value={heritage.category} onChange={(e) => setHeritage({ ...heritage, category: e.target.value })}>{heritageCategories.map((category) => <option key={category}>{category}</option>)}</select></Field>
+                  <Field label="Күйі"><select className={selectClass} value={heritage.status || "published"} onChange={(e) => setHeritage({ ...heritage, status: e.target.value as HeritageItem["status"] })}><option value="published">Жариялау</option><option value="draft">Жоба күйі</option><option value="hidden">Жасыру</option></select></Field>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <Field label="Қазақ тілі"><input className={inputClass} value={heritage.title.kk} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, kk: e.target.value } })} required /></Field>
+                  <Field label="Русский"><input className={inputClass} value={heritage.title.ru} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, ru: e.target.value } })} /></Field>
+                  <Field label="English"><input className={inputClass} value={heritage.title.en} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, en: e.target.value } })} /></Field>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <Field label="Қазақ тілі - қысқа мәтін"><textarea className={`${inputClass} min-h-24`} value={heritage.short.kk} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, kk: e.target.value } })} /></Field>
+                  <Field label="Русский - краткий текст"><textarea className={`${inputClass} min-h-24`} value={heritage.short.ru} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, ru: e.target.value } })} /></Field>
+                  <Field label="English - short text"><textarea className={`${inputClass} min-h-24`} value={heritage.short.en} onChange={(e) => setHeritage({ ...heritage, short: { ...heritage.short, en: e.target.value } })} /></Field>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <Field label="Қазақ тілі - толық мәтін"><textarea className={`${inputClass} min-h-40`} value={heritage.body.kk} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, kk: e.target.value } })} /></Field>
+                  <Field label="Русский - полный текст"><textarea className={`${inputClass} min-h-40`} value={heritage.body.ru} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, ru: e.target.value } })} /></Field>
+                  <Field label="English - full text"><textarea className={`${inputClass} min-h-40`} value={heritage.body.en} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, en: e.target.value } })} /></Field>
+                </div>
+                <Field label="Қызықты деректер, үтірмен бөліңіз"><input className={inputClass} value={heritage.facts.join(", ")} onChange={(e) => setHeritage({ ...heritage, facts: e.target.value.split(",").map((value) => value.trim()) })} /></Field>
+                <Field label="Фото жолы"><input className={inputClass} value={heritage.image} onChange={(e) => setHeritage({ ...heritage, image: e.target.value })} /></Field>
+                <input className={inputClass} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritage")} />
+                <div className="flex flex-wrap gap-3">
+                  <PrimaryButton type="submit"><Save size={16} /> Сақтау</PrimaryButton>
+                  <SoftButton onClick={() => setHeritage(blankHeritage)}><Plus size={16} /> Жаңа объект</SoftButton>
+                  {heritage.slug ? <SoftButton onClick={() => deleteHeritage(heritage.slug)}><Trash2 size={16} /> Өшіру</SoftButton> : null}
+                </div>
+              </form>
+            </Panel>
+            <Panel title="Объектілер тізімі">
+              <div className="grid gap-2">
+                {db.heritageItems.map((item) => (
+                  <button key={item.slug} className="rounded-md border border-[#e5e7eb] bg-white px-3 py-3 text-left hover:border-[#7c3aed]/60" onClick={() => setHeritage(item)}>
+                    <span className="font-semibold">{item.title.kk}</span> <span className="text-[#6b7280]">/{item.slug}</span>
+                  </button>
+                ))}
               </div>
-              <Field label="Қысқа сипаттама"><textarea className={`${inputClass} min-h-24`} value={heritageMenuItem.shortDescription} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, shortDescription: e.target.value })} /></Field>
-              <div className="grid gap-3 md:grid-cols-2">
-                <Field label="Байланысты мұра"><select className={selectClass} value={heritageMenuItem.linkedHeritageSlug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, linkedHeritageSlug: e.target.value })}><option value="">Мұраны таңдаңыз</option>{heritageOptions.map((item) => <option value={item.slug} key={item.slug}>{item.title.kk} /{item.slug}</option>)}</select></Field>
-                <Field label="Күйі"><select className={selectClass} value={heritageMenuItem.status} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, status: e.target.value as HeritageMenuItem["status"] })}><option value="published">Жариялау</option><option value="draft">Жоба күйі</option><option value="hidden">Жасыру</option></select></Field>
+            </Panel>
+          </div>
+        ) : null}
+
+        {activeTab === "menu" ? (
+          <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
+            <Panel title="Мәзір" text="Бұл Dzumba мәзірі емес. Тек сайт ішіндегі арнайы heritage тағамдары.">
+              <form className="grid gap-3" onSubmit={saveHeritageMenuItem}>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Field label="Тағам атауы"><input className={inputClass} value={heritageMenuItem.title} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, title: e.target.value })} required /></Field>
+                  <Field label="URL атауы"><input className={inputClass} placeholder="jankent-set" value={heritageMenuItem.slug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, slug: e.target.value })} /></Field>
+                  <Field label="Категория"><select className={selectClass} value={heritageMenuItem.category} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, category: e.target.value })}>{heritageMenuCategories.map((category) => <option key={category}>{category}</option>)}</select></Field>
+                  <Field label="Баға"><input className={inputClass} type="number" value={heritageMenuItem.price} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, price: Number(e.target.value) })} /></Field>
+                </div>
+                <Field label="Қысқа сипаттама"><textarea className={`${inputClass} min-h-24`} value={heritageMenuItem.shortDescription} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, shortDescription: e.target.value })} /></Field>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Field label="Байланысты мұра"><select className={selectClass} value={heritageMenuItem.linkedHeritageSlug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, linkedHeritageSlug: e.target.value })}><option value="">Мұраны таңдаңыз</option>{heritageOptions.map((item) => <option value={item.slug} key={item.slug}>{item.title.kk} /{item.slug}</option>)}</select></Field>
+                  <Field label="Күйі"><select className={selectClass} value={heritageMenuItem.status} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, status: e.target.value as HeritageMenuItem["status"] })}><option value="published">Жариялау</option><option value="draft">Жоба күйі</option><option value="hidden">Жасыру</option></select></Field>
+                </div>
+                <Field label="Фото жолы"><input className={inputClass} value={heritageMenuItem.image} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, image: e.target.value })} /></Field>
+                <input className={inputClass} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritageMenu")} />
+                <div className="flex flex-wrap gap-3">
+                  <PrimaryButton type="submit">Тағамды сақтау</PrimaryButton>
+                  <SoftButton onClick={() => setHeritageMenuItem(blankHeritageMenuItem)}><Plus size={16} /> Жаңа тағам</SoftButton>
+                  {heritageMenuItem.id ? <SoftButton onClick={() => deleteHeritageMenuItem(heritageMenuItem.id)}><Trash2 size={16} /> Өшіру</SoftButton> : null}
+                </div>
+              </form>
+            </Panel>
+            <Panel title="Тағамдар тізімі">
+              <div className="grid gap-2">
+                {db.heritageMenuItems.map((item) => (
+                  <button key={item.id} className="rounded-md border border-[#e5e7eb] bg-white px-3 py-3 text-left hover:border-[#7c3aed]/60" onClick={() => setHeritageMenuItem(item)}>
+                    <span className="font-semibold">{item.title}</span> <span className="text-[#6b7280]">/{item.linkedHeritageSlug || "байланыс жоқ"}</span>
+                  </button>
+                ))}
               </div>
-              <Field label="Фото жолы"><input className={inputClass} value={heritageMenuItem.image} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, image: e.target.value })} /></Field>
-              <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritageMenu")} />
-              <div className="flex flex-wrap gap-3">
-                <Button type="submit" tone="gold">Тағамды сақтау</Button>
-                <Button onClick={() => setHeritageMenuItem(blankHeritageMenuItem)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа тағам</Button>
-                {heritageMenuItem.id ? <Button onClick={() => deleteHeritageMenuItem(heritageMenuItem.id)} tone="ghost"><Trash2 className="mr-2" size={16} /> Өшіру</Button> : null}
+            </Panel>
+          </div>
+        ) : null}
+
+        {activeTab === "settings" ? (
+          <Panel title="Баптаулар" text="Dzumba сілтемесі, түстер және сайт бөлімдерінің көрінуі.">
+            <form className="grid gap-5" onSubmit={saveSettings}>
+              <Field label="Негізгі мәзір сілтемесі (Dzumba)"><input className={inputClass} value={settings.dzumbaMenuUrl} onChange={(e) => setSettings({ ...settings, dzumbaMenuUrl: e.target.value })} /></Field>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                {Object.entries(settings.colors).map(([key, value]) => (
+                  <Field label={key} key={key}>
+                    <div className="flex gap-2">
+                      <input className="h-11 w-14 rounded-md border border-[#e5e7eb] bg-transparent" type="color" value={value} onChange={(e) => setSettings({ ...settings, colors: { ...settings.colors, [key]: e.target.value } })} />
+                      <input className={`${inputClass} min-w-0 flex-1`} value={value} onChange={(e) => setSettings({ ...settings, colors: { ...settings.colors, [key]: e.target.value } })} />
+                    </div>
+                  </Field>
+                ))}
               </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ["introCards", "Кіріспе карточкалар"],
+                  ["menu", "Қазалы мұрасы мәзірі"],
+                  ["heritage", "Мұра жобасы"],
+                  ["customSections", "Қосымша бөлімдер"],
+                  ["booking", "Байланыс/брондау"]
+                ].map(([key, label]) => (
+                  <button className="inline-flex items-center gap-2 rounded-md border border-[#e5e7eb] px-3 py-2 text-sm" type="button" key={key} onClick={() => toggleVisibility(key as keyof SiteSettings["visibility"])}>
+                    {settings.visibility[key as keyof SiteSettings["visibility"]] ? <Eye size={16} /> : <EyeOff size={16} />}
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <PrimaryButton type="submit"><Save size={16} /> Баптауларды сақтау</PrimaryButton>
             </form>
           </Panel>
-          <Panel title="Тағамдар тізімі">
-            <div className="grid gap-2">
-              {db.heritageMenuItems.map((item) => (
-                <button key={item.id} className="rounded-md border border-white/10 bg-white/5 px-3 py-3 text-left hover:border-gold/60" onClick={() => setHeritageMenuItem(item)}>
-                  <span className="font-semibold">{item.title}</span> <span className="text-linen/60">/{item.linkedHeritageSlug || "байланыс жоқ"}</span>
-                </button>
-              ))}
-            </div>
-          </Panel>
-        </div>
-      ) : null}
+        ) : null}
 
-      {activeTab === "qr" ? (
-        <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
-          <Panel title="QR кодтар" text="Әр мұра объектінің жеке URL адресі бар. Осы жерден PNG немесе PDF жүктей аласыз.">
-            <div className="grid gap-2">
-              {heritageOptions.map((item) => (
-                <button key={item.slug} className={`rounded-md border px-3 py-3 text-left ${selectedQr?.slug === item.slug ? "border-gold bg-gold/10" : "border-white/10 bg-white/5"}`} onClick={() => setHeritage(item)}>
-                  {item.title.kk}
-                </button>
-              ))}
-            </div>
-          </Panel>
-          {selectedQr ? <QrTools slug={selectedQr.slug} title={selectedQr.title.kk} /> : null}
-        </div>
-      ) : null}
+        {activeTab === "qr" ? (
+          <div className="grid gap-5 xl:grid-cols-[360px_1fr]">
+            <Panel title="QR кодтар" text="Әр мұра объектінің жеке URL адресі бар. Осы жерден PNG немесе PDF жүктей аласыз.">
+              <div className="grid gap-2">
+                {heritageOptions.map((item) => (
+                  <button key={item.slug} className={`rounded-md border px-3 py-3 text-left ${selectedQr?.slug === item.slug ? "border-[#7c3aed] bg-[#f5f3ff]" : "border-[#e5e7eb] bg-white"}`} onClick={() => setHeritage(item)}>
+                    {item.title.kk}
+                  </button>
+                ))}
+              </div>
+            </Panel>
+            {selectedQr ? <QrTools slug={selectedQr.slug} title={selectedQr.title.kk} /> : null}
+          </div>
+        ) : null}
 
-      {message ? <p className="text-sm text-gold">{message}</p> : null}
+        {activeTab === "orders" ? <Panel title="Тапсырыстар" text="Бұл бөлім кейін тапсырыс жүйесі қосылғанда толық жұмыс істейді. Қазіргі негізгі кафе тапсырыстары Dzumba ішінде басқарылады."><p className="text-sm text-[#6b7280]">Қазіргі уақытта тапсырыстар Dzumba админ панелінде басқарылады.</p></Panel> : null}
+        {activeTab === "booking" ? <Panel title="Брондау" text="Брондау өтінімдерін бөлек беттен қарауға болады."><a className="inline-flex rounded-md border border-[#7c3aed] bg-[#7c3aed] px-4 py-2 text-sm font-semibold text-white" href="/admin/bookings">Брондауларға өту</a></Panel> : null}
+        {activeTab === "users" ? <Panel title="Пайдаланушылар" text="Қазір бір әкімші аккаунты қолданылады. Кейін Supabase Auth арқылы бірнеше пайдаланушы қосуға болады."><p className="text-sm text-[#6b7280]">Қосымша пайдаланушы рөлдерін кейін бөлек қосуға болады.</p></Panel> : null}
+        {message ? <p className="mt-5 text-sm font-medium text-[#7c3aed]">{message}</p> : null}
+      </div>
+      <footer className="border-t border-[#e5e7eb] px-5 py-6 text-center text-sm text-[#6b7280]">Nauat Heritage 2.0 © 2026. Барлық құқықтар қорғалған.</footer>
     </div>
   );
 }
