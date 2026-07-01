@@ -6,6 +6,26 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "*.supabase.co"
+      },
+      {
+        protocol: "https",
+        hostname: "seykhuninfo.kz"
+      },
+      {
+        protocol: "https",
+        hostname: "e-history.kz"
+      },
+      {
+        protocol: "https",
+        hostname: "cdn05.qazaqstan.tv"
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org"
+      },
+      {
+        protocol: "https",
+        hostname: "gdb.rferl.org"
       }
     ]
   },
