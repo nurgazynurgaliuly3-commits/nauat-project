@@ -1,10 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ExternalLink, UtensilsCrossed } from "lucide-react";
-import { Button } from "@/components/Buttons";
-import { Logo } from "@/components/Logo";
+import { ArrowRight, ExternalLink, Menu, Search, UtensilsCrossed } from "lucide-react";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { BodyText, Heading } from "@/components/Typography";
 import { formatPrice, getDb } from "@/lib/storage";
 
 const categories = [
@@ -16,45 +13,56 @@ const categories = [
   "Десерттер"
 ];
 
+const menuCopy: Record<string, { title: string; category: string; description: string }> = {
+  ulpershek: { title: "Үлпершек", category: "Ұлттық тағамдар", description: "Сағыныш пен сыйластық мағынасын сақтаған дәстүрлі ас." },
+  "myzhyma-nan": { title: "Мыжыма нан", category: "Ұлттық тағамдар", description: "Дала дастарханының қарапайым, жылы әрі тойымды дәмі." },
+  "jankent-set": { title: "Жанкент сеты", category: "Қазалы мұрасынан шабыт алған тағамдар", description: "Оғыз дәуірі мен Сыр бойы тарихынан шабыт алған арнайы сет." },
+  "ghani-muratbayev-tea": { title: "Ғани Мұратбаев шайы", category: "Тарихи тұлғаларға арналған тағамдар", description: "Жастар рухы мен білімге құштарлықты бейнелейтін шай жиынтығы." },
+  "korkyt-drink": { title: "Қорқыт сусыны", category: "Дәстүрлі сусындар", description: "Қобыз сарыны мен Сыр бойы аңыздарына арналған салқын сусын." },
+  "begim-ana-dessert": { title: "Бегім ана десерті", category: "Десерттер", description: "Бегім ана мұнарасы туралы аңыздың нәзік әсеріне арналған жеңіл десерт." }
+};
+
 export default async function HeritageMenuPage() {
   const db = await getDb();
-  const items = db.heritageMenuItems.filter((item) => item.status === "published");
+  const items = db.heritageMenuItems
+    .filter((item) => item.status === "published")
+    .map((item) => ({ ...item, ...(menuCopy[item.slug] || {}) }));
 
   return (
-    <main className="frontend-type min-h-screen bg-[#101711] pb-24 text-porcelain lg:pb-0">
-      <section className="relative overflow-hidden border-b border-white/10">
-        <Image src={db.settings.heroImage} alt="Қазалы мұрасы мәзірі" fill priority className="object-cover opacity-36" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/74 via-[#101711]/86 to-[#101711]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-5 lg:px-8">
-          <header className="flex items-center justify-between gap-3 rounded-md border border-white/12 bg-black/18 px-3 py-3 backdrop-blur-md">
-            <Logo compact />
-            <nav className="hidden items-center gap-5 text-sm font-medium text-linen/75 md:flex">
-              <Link href="/">Басты бет</Link>
-              <Link href="/menu">Негізгі мәзір</Link>
-              <Link href="/heritage">Heritage жобасы</Link>
-            </nav>
-            <div className="hidden sm:block">
-              <Button href="/menu" tone="gold">Негізгі мәзір <ExternalLink className="ml-2" size={16} /></Button>
-            </div>
+    <main className="frontend-type min-h-screen bg-[#F7F1E7] pb-24 text-[#1B3022] lg:pb-0">
+      <section className="relative overflow-hidden bg-[#1B3022] text-white">
+        <Image src={db.settings.heroImage} alt="Қазалы мұрасы мәзірі" fill priority className="object-cover opacity-38" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1B3022]/78 via-[#1B3022]/84 to-[#1B3022]" />
+        <div className="relative mx-auto max-w-6xl px-4 py-5 sm:px-6">
+          <header className="grid grid-cols-[44px_1fr_44px] items-center gap-3 text-white">
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Мәзір">
+              <Menu size={21} />
+            </button>
+            <Link href="/" className="text-center text-[13px] font-semibold tracking-[0.18em]">NAUAT HERITAGE 2.0</Link>
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Іздеу">
+              <Search size={20} />
+            </button>
           </header>
 
-          <div className="max-w-3xl py-14 md:py-24">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm font-medium text-gold">
-              <UtensilsCrossed size={16} /> Nauat Мұра 2.0
+          <div className="max-w-3xl py-16 md:py-24">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-medium text-[#C5A059]">
+              <UtensilsCrossed size={16} /> Nauat Heritage 2.0
             </p>
-            <Heading as="h1" size="article">Қазалы мұрасы мәзірі</Heading>
-            <BodyText className="mt-4 text-linen/82">
-              Бұл толық кафе мәзірі емес. Мұнда тек Қазалы тарихымен, жергілікті мұрамен, ұлттық тағам мәдениетімен және тарихи тұлғалармен байланысқан арнайы концепциялық тағамдар көрсетіледі.
-            </BodyText>
-            <p className="mt-4 font-accent text-xl italic text-linen/78">Толық негізгі мәзір Dzumba сервисінде бөлек ашылады.</p>
+            <h1 className="font-display text-[42px] font-semibold leading-tight sm:text-6xl">Қазалы мұрасы мәзірі</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
+              Бұл толық кафе мәзірі емес. Мұнда Қазалы тарихымен, жергілікті мұрамен және ұлттық тағам мәдениетімен байланысқан арнайы концепциялық тағамдар көрсетіледі.
+            </p>
+            <Link href="/menu" className="mt-6 inline-flex items-center rounded-md bg-[#C5A059] px-4 py-2 text-sm font-semibold text-[#1B3022]">
+              Негізгі мәзірге өту <ExternalLink className="ml-2" size={15} />
+            </Link>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-9 sm:px-5 lg:px-8 lg:py-12">
+      <section className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
         <div className="mb-7 flex gap-2 overflow-x-auto pb-1">
           {categories.map((category) => (
-            <span className="shrink-0 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm font-medium text-linen/75" key={category}>
+            <span className="shrink-0 rounded-full border border-[#1B3022]/10 bg-white px-4 py-2 text-sm font-medium text-[#1B3022]" key={category}>
               {category}
             </span>
           ))}
@@ -64,21 +72,25 @@ export default async function HeritageMenuPage() {
           {items.map((item) => {
             const heritage = db.heritageItems.find((entry) => entry.slug === item.linkedHeritageSlug);
             return (
-              <article className="group overflow-hidden rounded-md border border-white/10 bg-white/[0.045] shadow-glow" key={item.id}>
-                <Image src={item.image} alt={item.title} width={720} height={460} className="h-52 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-56" />
-                <div className="p-4 sm:p-5">
+              <article className="overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-[#1B3022]/10" key={item.id}>
+                <Image src={item.image} alt={item.title} width={720} height={460} className="h-52 w-full object-cover sm:h-56" />
+                <div className="p-4">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                    <span className="rounded-full bg-gold px-3 py-1 text-xs font-semibold text-ink">{item.category}</span>
-                    <span className="text-lg font-semibold text-gold">{formatPrice(item.price)}</span>
+                    <span className="rounded-full bg-[#F7F1E7] px-3 py-1 text-xs font-semibold text-[#6D4C41]">{item.category}</span>
+                    <span className="text-lg font-semibold text-[#6D4C41]">{formatPrice(item.price)}</span>
                   </div>
-                  <Heading as="h2" size="card">{item.title}</Heading>
-                  <p className="mt-3 text-helper !text-linen/75">{item.shortDescription}</p>
-                  <p className="mt-4 rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm leading-6 text-linen/80">
-                    Байланысты мұра: <span className="font-semibold text-gold">{heritage?.title.kk || item.linkedHeritageSlug}</span>
+                  <h2 className="font-display text-3xl font-semibold">{item.title}</h2>
+                  <p className="mt-3 text-sm leading-6 text-black/62">{item.description || item.shortDescription}</p>
+                  <p className="mt-4 rounded-md bg-[#F7F1E7] px-3 py-2 text-sm leading-6 text-black/68">
+                    Байланысты мұра: <span className="font-semibold text-[#1B3022]">{heritage?.title.kk || item.linkedHeritageSlug}</span>
                   </p>
                   <div className="mt-5 grid gap-2 sm:grid-cols-2">
-                    <Button href={`/heritage/${item.linkedHeritageSlug}`} tone="gold">Тарихын оқу <ArrowRight className="ml-2" size={16} /></Button>
-                    <Button href="/menu" tone="ghost">Негізгі мәзір</Button>
+                    <Link href={`/heritage/${item.linkedHeritageSlug}`} className="inline-flex min-h-10 items-center justify-center rounded-md bg-[#1B3022] px-4 py-2 text-sm font-semibold text-white">
+                      Тарихын оқу <ArrowRight className="ml-2" size={16} />
+                    </Link>
+                    <Link href="/menu" className="inline-flex min-h-10 items-center justify-center rounded-md border border-[#1B3022]/14 px-4 py-2 text-sm font-semibold text-[#1B3022]">
+                      Негізгі мәзір
+                    </Link>
                   </div>
                 </div>
               </article>

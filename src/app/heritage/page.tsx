@@ -1,10 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Landmark, QrCode } from "lucide-react";
-import { Button } from "@/components/Buttons";
-import { Logo } from "@/components/Logo";
+import { ArrowRight, History, Menu, Search } from "lucide-react";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { BodyText, Heading } from "@/components/Typography";
 import { getDb } from "@/lib/storage";
 
 export default async function HeritageIndexPage({ searchParams }: { searchParams: { category?: string } }) {
@@ -14,42 +11,40 @@ export default async function HeritageIndexPage({ searchParams }: { searchParams
   const items = db.heritageItems.filter((item) => item.status !== "hidden" && (!selected || item.category === selected));
 
   return (
-    <main className="frontend-type min-h-screen bg-[#101711] pb-24 text-porcelain lg:pb-0">
-      <section className="relative overflow-hidden border-b border-white/10">
-        <Image src={db.settings.heroImage} alt="Heritage жобасы" fill priority className="object-cover opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/72 via-[#101711]/78 to-[#101711]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-5 lg:px-8">
-          <header className="flex items-center justify-between gap-3 rounded-md border border-white/12 bg-black/18 px-3 py-3 backdrop-blur-md">
-            <Logo compact />
-            <nav className="hidden items-center gap-5 text-sm font-medium text-linen/75 md:flex">
-              <Link href="/">Басты бет</Link>
-              <Link href="/menu">Негізгі мәзір</Link>
-              <Link href="/heritage-menu">Қазалы мұрасы мәзірі</Link>
-            </nav>
-            <div className="hidden sm:block">
-              <Button href="/heritage-menu" tone="gold">Қазалы мұрасы мәзірі</Button>
-            </div>
+    <main className="frontend-type min-h-screen bg-[#F7F1E7] pb-24 text-[#1B3022] lg:pb-0">
+      <section className="relative overflow-hidden bg-[#1B3022] text-white">
+        <Image src={db.settings.heroImage} alt="Heritage жобасы" fill priority className="object-cover opacity-34" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1B3022]/78 via-[#1B3022]/84 to-[#1B3022]" />
+        <div className="relative mx-auto max-w-6xl px-4 py-5 sm:px-6">
+          <header className="grid grid-cols-[44px_1fr_44px] items-center gap-3">
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Мәзір">
+              <Menu size={21} />
+            </button>
+            <Link href="/" className="text-center text-[13px] font-semibold tracking-[0.18em]">NAUAT HERITAGE 2.0</Link>
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Іздеу">
+              <Search size={20} />
+            </button>
           </header>
 
-          <div className="max-w-3xl py-14 md:py-24">
-            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-black/35 px-4 py-2 text-sm font-medium text-gold">
-              <QrCode size={16} /> Цифрлық музей
+          <div className="max-w-3xl py-16 md:py-24">
+            <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-medium text-[#C5A059]">
+              <History size={16} /> Мұрағат
             </p>
-            <Heading as="h1" size="article">Heritage жобасы</Heading>
-            <BodyText className="mt-4 text-linen/80">
+            <h1 className="font-display text-[42px] font-semibold leading-tight sm:text-6xl">Heritage жобасы</h1>
+            <p className="mt-4 max-w-2xl text-base leading-7 text-white/78 sm:text-lg">
               Қазалы өңірінің тарихи орындары, тұлғалары, жәдігерлері және ұлттық тағам тарихы Nauat кеңістігінде QR арқылы таныстырылады.
-            </BodyText>
+            </p>
           </div>
         </div>
       </section>
 
-      <section id="heritage-list" className="mx-auto max-w-7xl px-4 py-9 sm:px-5 lg:px-8 lg:py-12">
+      <section id="heritage-list" className="mx-auto max-w-6xl px-4 py-7 sm:px-6">
         <div className="mb-7 flex gap-2 overflow-x-auto pb-1">
-          <Link className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${!selected ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/[0.05] text-linen/75"}`} href="/heritage">
+          <Link className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${!selected ? "border-[#1B3022] bg-[#1B3022] text-white" : "border-[#1B3022]/10 bg-white text-[#1B3022]"}`} href="/heritage">
             Барлығы
           </Link>
           {categories.map((category) => (
-            <Link className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${selected === category ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/[0.05] text-linen/75"}`} href={`/heritage?category=${encodeURIComponent(category)}`} key={category}>
+            <Link className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${selected === category ? "border-[#1B3022] bg-[#1B3022] text-white" : "border-[#1B3022]/10 bg-white text-[#1B3022]"}`} href={`/heritage?category=${encodeURIComponent(category)}`} key={category}>
               {category}
             </Link>
           ))}
@@ -57,16 +52,14 @@ export default async function HeritageIndexPage({ searchParams }: { searchParams
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <Link className="group overflow-hidden rounded-md border border-white/10 bg-white/[0.045] active:scale-[0.99]" href={`/heritage/${item.slug}`} key={item.slug}>
-              <Image src={item.image} alt={item.title.kk} width={720} height={460} className="h-48 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-52" />
-              <div className="p-4 sm:p-5">
-                <p className="mb-2 inline-flex items-center gap-2 text-overline text-gold">
-                  <Landmark size={14} /> {item.category}
-                </p>
-                <Heading as="h2" size="card">{item.title.kk}</Heading>
-                <p className="mt-2 text-helper !text-linen/75">{item.short.kk}</p>
-                <span className="mt-4 inline-flex items-center text-sm font-semibold text-gold">
-                  Ашу <ArrowRight className="ml-2" size={16} />
+            <Link className="overflow-hidden rounded-md bg-white shadow-sm ring-1 ring-[#1B3022]/10 transition hover:-translate-y-1 hover:shadow-xl" href={`/heritage/${item.slug}`} key={item.slug}>
+              <Image src={item.image} alt={item.title.kk} width={720} height={460} className="h-48 w-full object-cover sm:h-52" />
+              <div className="p-4">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#6D4C41]">{item.category}</p>
+                <h2 className="font-display text-3xl font-semibold">{item.title.kk}</h2>
+                <p className="mt-2 text-sm leading-6 text-black/62">{item.short.kk}</p>
+                <span className="mt-4 inline-flex items-center text-sm font-semibold text-[#1B3022]">
+                  Толығырақ <ArrowRight className="ml-2" size={16} />
                 </span>
               </div>
             </Link>

@@ -1,12 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Globe2 } from "lucide-react";
-import { Button } from "@/components/Buttons";
-import { Logo } from "@/components/Logo";
+import { ArrowRight, Globe2, Menu, Search } from "lucide-react";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { QrTools } from "@/components/QrTools";
-import { BodyText, Heading } from "@/components/Typography";
 import { formatPrice, getDb } from "@/lib/storage";
 import type { Locale } from "@/lib/types";
 
@@ -33,76 +30,85 @@ export default async function HeritagePage({ params, searchParams }: { params: {
   const next = visibleItems[(currentIndex + 1) % visibleItems.length];
 
   return (
-    <main className="frontend-type bg-[#101711] pb-24 text-porcelain lg:pb-0">
-      <section className="relative min-h-[74svh] overflow-hidden">
+    <main className="frontend-type bg-[#F7F1E7] pb-24 text-[#1B3022] lg:pb-0">
+      <section className="relative min-h-[74svh] overflow-hidden bg-[#1B3022] text-white">
         <Image src={item.image} alt={item.title[locale]} fill priority className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/78 via-black/48 to-[#101711]" />
-        <div className="relative mx-auto flex min-h-[74svh] max-w-7xl flex-col px-4 py-4 sm:px-5 lg:px-8">
-          <header className="flex items-center justify-between gap-3 rounded-md border border-white/12 bg-black/18 px-3 py-3 backdrop-blur-md">
-            <Logo compact />
-            <div className="hidden gap-2 sm:flex">
-              <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
-              <Button href="/heritage-menu" tone="gold">Қазалы мұрасы мәзірі</Button>
-            </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1B3022]/78 via-[#1B3022]/48 to-[#1B3022]" />
+        <div className="relative mx-auto flex min-h-[74svh] max-w-6xl flex-col px-4 py-5 sm:px-6">
+          <header className="grid grid-cols-[44px_1fr_44px] items-center gap-3">
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Мәзір">
+              <Menu size={21} />
+            </button>
+            <Link href="/" className="text-center text-[13px] font-semibold tracking-[0.18em]">NAUAT HERITAGE 2.0</Link>
+            <button className="grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#1B3022]" aria-label="Іздеу">
+              <Search size={20} />
+            </button>
           </header>
+
           <div className="flex flex-1 items-end pb-8">
             <div className="max-w-3xl">
-              <p className="mb-3 inline-flex rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm font-medium text-gold">{item.category}</p>
-              <Heading as="h1" size="article">{item.title[locale]}</Heading>
-              <BodyText className="mt-4 max-w-2xl text-linen">{item.short[locale]}</BodyText>
+              <p className="mb-3 inline-flex rounded-full border border-white/18 bg-white/10 px-4 py-2 text-sm font-medium text-[#C5A059]">{item.category}</p>
+              <h1 className="font-display text-[42px] font-semibold leading-tight sm:text-6xl">{item.title[locale]}</h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-white/82 sm:text-lg">{item.short[locale]}</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-9 sm:px-5 lg:grid-cols-[1fr_340px] lg:gap-8 lg:px-8 lg:py-12">
-        <article className="space-y-5 lg:space-y-8">
-          <div className="rounded-md border border-white/10 bg-white/[0.045] p-4 sm:p-5">
+      <section className="mx-auto grid max-w-6xl gap-6 px-4 py-7 sm:px-6 lg:grid-cols-[1fr_340px] lg:gap-8 lg:py-10">
+        <article className="space-y-5">
+          <div className="rounded-md bg-white p-4 shadow-sm ring-1 ring-[#1B3022]/10 sm:p-5">
             <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
-              <Globe2 className="mr-1 mt-2 shrink-0 text-gold" size={18} />
+              <Globe2 className="mr-1 mt-2 shrink-0 text-[#C5A059]" size={18} />
               {(["kk", "ru", "en"] as Locale[]).map((lang) => (
                 <Link
                   key={lang}
-                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${locale === lang ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/5 text-linen"}`}
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${locale === lang ? "border-[#1B3022] bg-[#1B3022] text-white" : "border-[#1B3022]/10 bg-[#F7F1E7] text-[#1B3022]"}`}
                   href={`/heritage/${item.slug}?lang=${lang}`}
                 >
                   {localeLabels[lang]}
                 </Link>
               ))}
             </div>
-            <Heading as="h2" size="card">Толық мәтін</Heading>
-            <p className="mt-4 text-body text-base text-linen/90 sm:text-lg">{item.body[locale]}</p>
+            <h2 className="font-display text-3xl font-semibold">Толық мәтін</h2>
+            <p className="mt-4 text-base leading-8 text-black/72 sm:text-lg">{item.body[locale]}</p>
           </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
-            <div className="rounded-md border border-gold/30 bg-gold/10 p-4 sm:p-5">
-              <Heading as="h2" size="card">Қызықты деректер</Heading>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="rounded-md bg-[#1B3022] p-4 text-white shadow-sm sm:p-5">
+              <h2 className="font-display text-3xl font-semibold">Қызықты деректер</h2>
               <ul className="mt-4 space-y-3">
                 {item.facts.map((fact) => (
-                  <li className="rounded-md border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-linen sm:text-base" key={fact}>{fact}</li>
+                  <li className="rounded-md border border-white/12 bg-white/8 px-4 py-3 text-sm leading-6 text-white/78" key={fact}>{fact}</li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-md border border-white/10 bg-white/[0.045] p-4 sm:p-5">
-              <Heading as="h2" size="card">Байланысты тағамдар</Heading>
-              <p className="mt-2 text-helper !text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
+            <div className="rounded-md bg-white p-4 shadow-sm ring-1 ring-[#1B3022]/10 sm:p-5">
+              <h2 className="font-display text-3xl font-semibold">Байланысты тағамдар</h2>
+              <p className="mt-2 text-sm leading-6 text-black/58">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
               <div className="mt-4 grid gap-3">
                 {related.length ? related.map((menuItem) => (
-                  <div className="rounded-md border border-white/10 bg-black/20 p-4" key={menuItem.id}>
-                    <p className="font-semibold text-porcelain">{menuItem.title}</p>
-                    <p className="mt-1 text-helper !text-linen/75">{menuItem.shortDescription}</p>
-                    <p className="mt-2 text-gold">{formatPrice(menuItem.price)}</p>
+                  <div className="rounded-md bg-[#F7F1E7] p-4" key={menuItem.id}>
+                    <p className="font-semibold">{menuItem.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-black/62">{menuItem.shortDescription}</p>
+                    <p className="mt-2 text-[#6D4C41]">{formatPrice(menuItem.price)}</p>
                   </div>
                 )) : (
-                  <p className="rounded-md border border-white/10 bg-black/20 p-4 text-sm text-linen/70">Бұл мұраға байланысты арнайы тағам әлі қосылмаған.</p>
+                  <p className="rounded-md bg-[#F7F1E7] p-4 text-sm text-black/62">Бұл мұраға байланысты арнайы тағам әлі қосылмаған.</p>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="grid gap-2 sm:flex sm:flex-row sm:gap-3">
-            {next ? <Button href={`/heritage/${next.slug}`} tone="gold">Келесі мұра <ArrowRight className="ml-2" size={16} /></Button> : null}
-            <Button href="/menu" tone="ghost">Негізгі мәзірге өту</Button>
+          <div className="grid gap-2 sm:flex">
+            {next ? (
+              <Link href={`/heritage/${next.slug}`} className="inline-flex min-h-10 items-center justify-center rounded-md bg-[#1B3022] px-4 py-2 text-sm font-semibold text-white">
+                Келесі мұра <ArrowRight className="ml-2" size={16} />
+              </Link>
+            ) : null}
+            <Link href="/menu" className="inline-flex min-h-10 items-center justify-center rounded-md border border-[#1B3022]/14 px-4 py-2 text-sm font-semibold text-[#1B3022]">
+              Негізгі мәзірге өту
+            </Link>
           </div>
         </article>
 
