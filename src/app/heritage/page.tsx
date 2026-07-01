@@ -13,7 +13,7 @@ export default async function HeritageIndexPage({ searchParams }: { searchParams
   return (
     <main className="min-h-screen bg-ink text-porcelain">
       <section className="relative overflow-hidden border-b border-white/10">
-        <Image src={db.settings.heroImage} alt="Heritage жобасы" fill priority className="object-cover opacity-30" />
+        <Image src={db.settings.heroImage} alt="Мұра жобасы" fill priority className="object-cover opacity-30" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-ink/75 to-ink" />
         <div className="relative mx-auto max-w-7xl px-5 py-5">
           <header className="flex items-center justify-between gap-4 rounded-md border border-white/10 bg-black/25 px-4 py-3 backdrop-blur">
@@ -31,7 +31,7 @@ export default async function HeritageIndexPage({ searchParams }: { searchParams
             <p className="mb-4 inline-flex items-center gap-2 rounded-md border border-gold/40 bg-black/35 px-3 py-2 text-sm text-gold">
               <QrCode size={16} /> Цифрлық музей
             </p>
-            <h1 className="font-[var(--font-display)] text-5xl font-semibold leading-tight md:text-6xl">Heritage жобасы</h1>
+            <h1 className="font-[var(--font-display)] text-5xl font-semibold leading-tight md:text-6xl">Мұра жобасы</h1>
             <p className="mt-5 text-lg leading-8 text-linen/80">
               Қазалы өңірінің тарихи орындары, тұлғалары, жәдігерлері және ұлттық тағам тарихы Nauat кеңістігінде QR арқылы таныстырылады.
             </p>

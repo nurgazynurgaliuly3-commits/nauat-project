@@ -14,7 +14,7 @@ export default async function AdminPage() {
         <div>
           <Link href="/" className="font-[var(--font-display)] text-2xl font-semibold text-gold">Nauat</Link>
           <h1 className="mt-3 font-[var(--font-display)] text-4xl font-semibold">Әкімші панелі</h1>
-          <p className="mt-2 max-w-2xl text-linen/75">Heritage объектілерін, Қазалы мұрасы мәзірін, Dzumba негізгі мәзір сілтемесін және QR кодтарды басқару.</p>
+          <p className="mt-2 max-w-2xl text-linen/75">Мұра объектілерін, Қазалы мұрасы мәзірін, Dzumba негізгі мәзір сілтемесін және QR кодтарды басқару.</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Button href="/admin/bookings" tone="gold">Брондаулар</Button>

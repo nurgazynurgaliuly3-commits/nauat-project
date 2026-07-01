@@ -35,7 +35,7 @@ export default async function HomePage() {
               <Link href="/">Басты бет</Link>
               <Link href="/menu">Негізгі мәзір</Link>
               <Link href="/heritage-menu">Қазалы мұрасы мәзірі</Link>
-              <Link href="/heritage">Heritage жобасы</Link>
+              <Link href="/heritage">Мұра жобасы</Link>
               <Link href="/heritage?category=Тұлғалар">Тарихи тұлғалар</Link>
               <Link href="/heritage?category=Жәдігерлер">Жәдігерлер</Link>
               <a href="#booking">Байланыс</a>
@@ -55,7 +55,7 @@ export default async function HomePage() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button href="/menu" tone="gold">Негізгі мәзірді көру</Button>
                 <Button href="/heritage-menu" tone="light">Қазалы мұрасы мәзірі</Button>
-                <Button href="/heritage" tone="ghost">Heritage жобасымен танысу</Button>
+                <Button href="/heritage" tone="ghost">Мұра жобасымен танысу</Button>
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default async function HomePage() {
         <article className="rounded-lg border p-6" style={{ borderColor: settings.colors.gold, background: `${settings.colors.gold}1f` }}>
           <div className="mb-4 flex items-center gap-3 text-[var(--site-gold)]">
             <BookOpen size={24} />
-            <p className="text-sm font-semibold uppercase tracking-[0.18em]">Nauat Heritage 2.0</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em]">Nauat Мұра 2.0</p>
           </div>
           <h2 className="font-[var(--font-display)] text-4xl font-semibold">Қазалы мұрасы мәзірі</h2>
           <p className="mt-3 leading-7 text-[var(--site-muted)]">
@@ -174,7 +174,7 @@ export default async function HomePage() {
               ))}
             </div>
             <div className="mt-8">
-              <Button href="/heritage" tone="gold">Heritage жобасына өту</Button>
+              <Button href="/heritage" tone="gold">Мұра жобасына өту</Button>
             </div>
           </div>
         </section>

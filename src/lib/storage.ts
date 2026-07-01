@@ -5,7 +5,7 @@ import type { HeritageMenuItem, NauatDb } from "@/lib/types";
 import { readSupabaseDb, writeSupabaseDb } from "@/lib/supabase";
 
 const dataPath = path.join(process.cwd(), "src", "data", "db.json");
-const defaultDzumbaMenuUrl = process.env.DZUMBA_MENU_URL || "https://dzumba.kz/";
+const defaultDzumbaMenuUrl = process.env.DZUMBA_MENU_URL || "https://nauatcafe.dzumba.kz/";
 const fallbackImage = "/images/nauat-heritage-hero.png";
 
 function nowIso() {
@@ -16,7 +16,7 @@ export function normalizeDb(db: NauatDb): NauatDb {
   const stamp = nowIso();
   const settings = {
     ...db.settings,
-    dzumbaMenuUrl: db.settings.dzumbaMenuUrl || defaultDzumbaMenuUrl,
+    dzumbaMenuUrl: !db.settings.dzumbaMenuUrl || db.settings.dzumbaMenuUrl === "https://dzumba.kz/" ? defaultDzumbaMenuUrl : db.settings.dzumbaMenuUrl,
     menuTitle: db.settings.menuTitle || "Қазалы мұрасы мәзірі",
     menuSubtitle: db.settings.menuSubtitle || "Арнайы концепциялық мәзір"
   };

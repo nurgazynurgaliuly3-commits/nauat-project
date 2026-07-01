@@ -28,7 +28,7 @@ export default async function HeritageMenuPage() {
             <nav className="hidden items-center gap-5 text-sm text-linen/75 md:flex">
               <Link href="/">Басты бет</Link>
               <Link href="/menu">Негізгі мәзір</Link>
-              <Link href="/heritage">Heritage жобасы</Link>
+              <Link href="/heritage">Мұра жобасы</Link>
               <Link href="/admin">Әкімші</Link>
             </nav>
             <Button href="/menu" tone="gold">Негізгі мәзір</Button>
@@ -36,7 +36,7 @@ export default async function HeritageMenuPage() {
 
           <div className="max-w-3xl py-16 md:py-24">
             <p className="mb-4 inline-flex items-center gap-2 rounded-md border border-gold/40 bg-black/35 px-3 py-2 text-sm text-gold">
-              <UtensilsCrossed size={16} /> Nauat Heritage 2.0
+              <UtensilsCrossed size={16} /> Nauat Мұра 2.0
             </p>
             <h1 className="font-[var(--font-display)] text-5xl font-semibold leading-tight md:text-6xl">Қазалы мұрасы мәзірі</h1>
             <p className="mt-5 text-lg leading-8 text-linen/80">
@@ -46,7 +46,7 @@ export default async function HeritageMenuPage() {
               <Button href="/menu" tone="gold">
                 Негізгі мәзірге өту <ExternalLink className="ml-2" size={16} />
               </Button>
-              <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
+              <Button href="/heritage" tone="ghost">Мұра жобасы</Button>
             </div>
           </div>
         </div>

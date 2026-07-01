@@ -231,7 +231,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
           <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "settings")} />
 
           <div className="grid gap-3 md:grid-cols-2">
-            <Field label="Dzumba негізгі мәзір URL"><input className={inputClass} value={settings.dzumbaMenuUrl} onChange={(e) => setSettings({ ...settings, dzumbaMenuUrl: e.target.value })} /></Field>
+            <Field label="Негізгі мәзір сілтемесі (Dzumba)"><input className={inputClass} value={settings.dzumbaMenuUrl} onChange={(e) => setSettings({ ...settings, dzumbaMenuUrl: e.target.value })} /></Field>
             <Field label="Қазалы мұрасы мәзірі тақырыбы"><input className={inputClass} value={settings.menuTitle} onChange={(e) => setSettings({ ...settings, menuTitle: e.target.value })} /></Field>
             <Field label="Мұра белгі мәтіні"><input className={inputClass} value={settings.heritageSubtitle} onChange={(e) => setSettings({ ...settings, heritageSubtitle: e.target.value })} /></Field>
             <Field label="Мұра тақырыбы"><input className={inputClass} value={settings.heritageTitle} onChange={(e) => setSettings({ ...settings, heritageTitle: e.target.value })} /></Field>
@@ -259,7 +259,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
               {[
                 ["introCards", "Кіріспе карточкалар"],
                 ["menu", "Қазалы мұрасы мәзірі"],
-                ["heritage", "Heritage жобасы"],
+                ["heritage", "Мұра жобасы"],
                 ["customSections", "Қосымша бөлімдер"],
                 ["booking", "Байланыс/брондау"]
               ].map(([key, label]) => (
@@ -306,7 +306,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
       <div className="grid gap-8 xl:grid-cols-[1fr_0.9fr]">
         <section className="glass rounded-lg p-5">
           <div className="mb-5 flex items-center justify-between gap-3">
-            <h2 className="font-[var(--font-display)] text-2xl">Heritage объектілер</h2>
+            <h2 className="font-[var(--font-display)] text-2xl">Мұра объектілері</h2>
             <Button onClick={() => setHeritage(blankHeritage)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа объект</Button>
           </div>
           <form className="grid gap-3" onSubmit={saveHeritage}>

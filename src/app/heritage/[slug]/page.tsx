@@ -38,7 +38,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
           <header className="flex items-center justify-between gap-3">
             <Link href="/" className="rounded-md border border-white/15 bg-black/30 px-4 py-3 font-[var(--font-display)] text-xl font-semibold backdrop-blur">Nauat</Link>
             <div className="flex gap-2">
-              <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
+              <Button href="/heritage" tone="ghost">Мұра жобасы</Button>
               <Button href="/heritage-menu" tone="gold">Мұра мәзірі</Button>
             </div>
           </header>
