@@ -1,14 +1,26 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Eye, EyeOff, Plus, Save, Trash2, UtensilsCrossed } from "lucide-react";
-import type { HeritageItem, MenuItem, NauatDb, SiteSection, SiteSettings } from "@/lib/types";
+import type { HeritageItem, HeritageMenuItem, NauatDb, SiteSection, SiteSettings } from "@/lib/types";
 import { Button } from "@/components/Buttons";
 import { QrTools } from "@/components/QrTools";
 
 const inputClass = "rounded-md border border-white/15 bg-white/5 px-3 py-3 text-porcelain";
+const selectClass = "rounded-md border border-white/15 bg-ink px-3 py-3 text-porcelain";
+const fallbackImage = "/images/nauat-heritage-hero.png";
+const heritageCategories = ["Тарихи орындар", "Тұлғалар", "Жәдігерлер", "Ұлттық тағам тарихы"];
+const heritageMenuCategories = [
+  "Ұлттық тағамдар",
+  "Қазалы мұрасынан шабыт алған тағамдар",
+  "Тарихи тұлғаларға арналған тағамдар",
+  "Арнайы сеттер",
+  "Дәстүрлі сусындар",
+  "Десерттер"
+];
 
 const blankHeritage: HeritageItem = {
+  id: "",
   slug: "",
   category: "Тарихи орындар",
   title: { kk: "", ru: "", en: "" },
@@ -16,17 +28,25 @@ const blankHeritage: HeritageItem = {
   body: { kk: "", ru: "", en: "" },
   facts: [],
   relatedMenuIds: [],
-  image: "/images/nauat-heritage-hero.png"
+  image: fallbackImage,
+  galleryImages: [],
+  status: "published",
+  createdAt: "",
+  updatedAt: ""
 };
 
-const blankMenu: MenuItem = {
+const blankHeritageMenuItem: HeritageMenuItem = {
   id: "",
-  name: "",
-  category: "Негізгі тағамдар",
-  description: "",
+  title: "",
+  slug: "",
+  category: "Ұлттық тағамдар",
   price: 0,
-  image: "/images/nauat-heritage-hero.png",
-  heritage: false
+  image: fallbackImage,
+  shortDescription: "",
+  linkedHeritageSlug: "",
+  status: "published",
+  createdAt: "",
+  updatedAt: ""
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -38,17 +58,28 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9а-яәғқңөұүһіё\s-]/gi, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
   const [db, setDb] = useState(initialDb);
   const [settings, setSettings] = useState<SiteSettings>(initialDb.settings);
   const [heritage, setHeritage] = useState<HeritageItem>(blankHeritage);
-  const [menu, setMenu] = useState<MenuItem>(blankMenu);
+  const [heritageMenuItem, setHeritageMenuItem] = useState<HeritageMenuItem>(blankHeritageMenuItem);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     setDb(initialDb);
     setSettings(initialDb.settings);
   }, [initialDb]);
+
+  const heritageOptions = useMemo(() => db.heritageItems.filter((item) => item.status !== "hidden"), [db.heritageItems]);
 
   async function persist(nextDb: NauatDb) {
     setMessage("Сақталуда...");
@@ -61,12 +92,13 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
       setMessage("Сақтау кезінде қате шықты");
       return;
     }
-    setDb(nextDb);
-    setSettings(nextDb.settings);
-    setMessage("Сақталды. Алдыңғы дерек автоматты түрде қор көшірме ретінде сақталды.");
+    const saved = (await response.json().catch(() => null)) as NauatDb | null;
+    setDb(saved || nextDb);
+    setSettings((saved || nextDb).settings);
+    setMessage("Сақталды.");
   }
 
-  async function uploadPhoto(file: File, target: "settings" | "heritage" | "menu" | "section", sectionId?: string) {
+  async function uploadPhoto(file: File, target: "settings" | "heritage" | "heritageMenu" | "section", sectionId?: string) {
     setMessage("Фото жүктелуде...");
     const formData = new FormData();
     formData.append("file", file);
@@ -79,7 +111,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
     const result = (await response.json()) as { path: string };
     if (target === "settings") setSettings((current) => ({ ...current, heroImage: result.path }));
     if (target === "heritage") setHeritage((current) => ({ ...current, image: result.path }));
-    if (target === "menu") setMenu((current) => ({ ...current, image: result.path }));
+    if (target === "heritageMenu") setHeritageMenuItem((current) => ({ ...current, image: result.path }));
     if (target === "section" && sectionId) {
       setSettings((current) => ({
         ...current,
@@ -122,38 +154,57 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
 
   function saveHeritage(event: FormEvent) {
     event.preventDefault();
-    const item = {
+    const stamp = new Date().toISOString();
+    const slug = heritage.slug || slugify(heritage.title.kk);
+    const item: HeritageItem = {
       ...heritage,
+      id: heritage.id || slug,
+      slug,
       facts: heritage.facts.filter(Boolean),
-      relatedMenuIds: heritage.relatedMenuIds.filter(Boolean)
+      relatedMenuIds: heritage.relatedMenuIds.filter(Boolean),
+      galleryImages: heritage.galleryImages || [],
+      status: heritage.status || "published",
+      createdAt: heritage.createdAt || stamp,
+      updatedAt: stamp
     };
     const next = db.heritageItems.some((entry) => entry.slug === item.slug)
       ? db.heritageItems.map((entry) => (entry.slug === item.slug ? item : entry))
       : [...db.heritageItems, item];
     persist({ ...db, heritageItems: next });
+    setHeritage(item);
   }
 
   function deleteHeritage(slug: string) {
-    persist({ ...db, heritageItems: db.heritageItems.filter((item) => item.slug !== slug) });
+    persist({
+      ...db,
+      heritageItems: db.heritageItems.filter((item) => item.slug !== slug),
+      heritageMenuItems: db.heritageMenuItems.map((item) => (item.linkedHeritageSlug === slug ? { ...item, linkedHeritageSlug: "" } : item))
+    });
     if (heritage.slug === slug) setHeritage(blankHeritage);
   }
 
-  function saveMenu(event: FormEvent) {
+  function saveHeritageMenuItem(event: FormEvent) {
     event.preventDefault();
-    const item = { ...menu, id: menu.id || crypto.randomUUID() };
-    const next = db.menuItems.some((entry) => entry.id === item.id)
-      ? db.menuItems.map((entry) => (entry.id === item.id ? item : entry))
-      : [...db.menuItems, item];
-    persist({ ...db, menuItems: next });
+    const stamp = new Date().toISOString();
+    const slug = heritageMenuItem.slug || slugify(heritageMenuItem.title);
+    const item: HeritageMenuItem = {
+      ...heritageMenuItem,
+      id: heritageMenuItem.id || `hm-${crypto.randomUUID()}`,
+      slug,
+      status: heritageMenuItem.status || "published",
+      createdAt: heritageMenuItem.createdAt || stamp,
+      updatedAt: stamp
+    };
+    const next = db.heritageMenuItems.some((entry) => entry.id === item.id)
+      ? db.heritageMenuItems.map((entry) => (entry.id === item.id ? item : entry))
+      : [...db.heritageMenuItems, item];
+    persist({ ...db, heritageMenuItems: next });
+    setHeritageMenuItem(item);
   }
 
-  function deleteMenu(id: string) {
-    persist({
-      ...db,
-      menuItems: db.menuItems.filter((item) => item.id !== id),
-      heritageItems: db.heritageItems.map((item) => ({ ...item, relatedMenuIds: item.relatedMenuIds.filter((menuId) => menuId !== id) }))
-    });
-    if (menu.id === id) setMenu(blankMenu);
+  function deleteHeritageMenuItem(id: string) {
+    persist({ ...db, heritageMenuItems: db.heritageMenuItems.filter((item) => item.id !== id) });
+    if (heritageMenuItem.id === id) setHeritageMenuItem(blankHeritageMenuItem);
   }
 
   return (
@@ -162,7 +213,7 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
         <div className="mb-5 flex flex-col justify-between gap-3 md:flex-row md:items-center">
           <div>
             <h2 className="font-[var(--font-display)] text-2xl">Сайтты басқару</h2>
-            <p className="mt-1 text-sm text-linen/75">Түстер, басты мәтіндер, бөлімдер және көріну күйі осы жерден өзгереді.</p>
+            <p className="mt-1 text-sm text-linen/75">Түстер, басты мәтіндер, бөлімдер, Dzumba мәзір сілтемесі және көріну күйі осы жерден өзгереді.</p>
           </div>
           <Button onClick={() => persist({ ...db, settings })} tone="gold">
             <Save className="mr-2" size={16} /> Баптауларды сақтау
@@ -180,13 +231,13 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
           <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "settings")} />
 
           <div className="grid gap-3 md:grid-cols-2">
-            <Field label="Мәзір белгі мәтіні"><input className={inputClass} value={settings.menuSubtitle} onChange={(e) => setSettings({ ...settings, menuSubtitle: e.target.value })} /></Field>
-            <Field label="Мәзір тақырыбы"><input className={inputClass} value={settings.menuTitle} onChange={(e) => setSettings({ ...settings, menuTitle: e.target.value })} /></Field>
+            <Field label="Dzumba негізгі мәзір URL"><input className={inputClass} value={settings.dzumbaMenuUrl} onChange={(e) => setSettings({ ...settings, dzumbaMenuUrl: e.target.value })} /></Field>
+            <Field label="Қазалы мұрасы мәзірі тақырыбы"><input className={inputClass} value={settings.menuTitle} onChange={(e) => setSettings({ ...settings, menuTitle: e.target.value })} /></Field>
             <Field label="Мұра белгі мәтіні"><input className={inputClass} value={settings.heritageSubtitle} onChange={(e) => setSettings({ ...settings, heritageSubtitle: e.target.value })} /></Field>
             <Field label="Мұра тақырыбы"><input className={inputClass} value={settings.heritageTitle} onChange={(e) => setSettings({ ...settings, heritageTitle: e.target.value })} /></Field>
-            <Field label="Брондау тақырыбы"><input className={inputClass} value={settings.bookingTitle} onChange={(e) => setSettings({ ...settings, bookingTitle: e.target.value })} /></Field>
+            <Field label="Байланыс/брондау тақырыбы"><input className={inputClass} value={settings.bookingTitle} onChange={(e) => setSettings({ ...settings, bookingTitle: e.target.value })} /></Field>
           </div>
-          <Field label="Брондау мәтіні"><textarea className={`${inputClass} min-h-24`} value={settings.bookingText} onChange={(e) => setSettings({ ...settings, bookingText: e.target.value })} /></Field>
+          <Field label="Байланыс/брондау мәтіні"><textarea className={`${inputClass} min-h-24`} value={settings.bookingText} onChange={(e) => setSettings({ ...settings, bookingText: e.target.value })} /></Field>
 
           <div>
             <h3 className="mb-3 font-[var(--font-display)] text-xl">Түстер</h3>
@@ -207,10 +258,10 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
             <div className="flex flex-wrap gap-2">
               {[
                 ["introCards", "Кіріспе карточкалар"],
-                ["menu", "Мәзір"],
-                ["heritage", "Мұра"],
+                ["menu", "Қазалы мұрасы мәзірі"],
+                ["heritage", "Heritage жобасы"],
                 ["customSections", "Қосымша бөлімдер"],
-                ["booking", "Брондау"]
+                ["booking", "Байланыс/брондау"]
               ].map(([key, label]) => (
                 <button className="inline-flex items-center gap-2 rounded-md border border-white/15 px-3 py-2 text-sm" type="button" key={key} onClick={() => toggleVisibility(key as keyof SiteSettings["visibility"])}>
                   {settings.visibility[key as keyof SiteSettings["visibility"]] ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -252,20 +303,24 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
         </form>
       </section>
 
-      <div className="grid gap-8 lg:grid-cols-[1fr_0.85fr]">
+      <div className="grid gap-8 xl:grid-cols-[1fr_0.9fr]">
         <section className="glass rounded-lg p-5">
           <div className="mb-5 flex items-center justify-between gap-3">
-            <h2 className="font-[var(--font-display)] text-2xl">Мұра объектілері</h2>
-            <Button onClick={() => setHeritage(blankHeritage)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа</Button>
+            <h2 className="font-[var(--font-display)] text-2xl">Heritage объектілер</h2>
+            <Button onClick={() => setHeritage(blankHeritage)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа объект</Button>
           </div>
           <form className="grid gap-3" onSubmit={saveHeritage}>
-            <input className={inputClass} placeholder="Сілтеме атауы: jankent" value={heritage.slug} onChange={(e) => setHeritage({ ...heritage, slug: e.target.value })} required />
-            <select className="rounded-md border border-white/15 bg-ink px-3 py-3" value={heritage.category} onChange={(e) => setHeritage({ ...heritage, category: e.target.value })}>
-              <option>Тарихи орындар</option>
-              <option>Тұлғалар</option>
-              <option>Жәдігерлер</option>
-              <option>Ұлттық тағамдар</option>
-            </select>
+            <div className="grid gap-3 md:grid-cols-3">
+              <input className={inputClass} placeholder="Сілтеме атауы: jankent" value={heritage.slug} onChange={(e) => setHeritage({ ...heritage, slug: e.target.value })} required />
+              <select className={selectClass} value={heritage.category} onChange={(e) => setHeritage({ ...heritage, category: e.target.value })}>
+                {heritageCategories.map((category) => <option key={category}>{category}</option>)}
+              </select>
+              <select className={selectClass} value={heritage.status || "published"} onChange={(e) => setHeritage({ ...heritage, status: e.target.value as HeritageItem["status"] })}>
+                <option value="published">Жариялау</option>
+                <option value="draft">Жоба күйі</option>
+                <option value="hidden">Жасыру</option>
+              </select>
+            </div>
             <div className="grid gap-3 md:grid-cols-3">
               <input className={inputClass} placeholder="Қазақша атауы" value={heritage.title.kk} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, kk: e.target.value } })} required />
               <input className={inputClass} placeholder="Орысша атауы" value={heritage.title.ru} onChange={(e) => setHeritage({ ...heritage, title: { ...heritage.title, ru: e.target.value } })} />
@@ -282,15 +337,14 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
               <textarea className={`${inputClass} min-h-36`} placeholder="Ағылшынша толық мәтін" value={heritage.body.en} onChange={(e) => setHeritage({ ...heritage, body: { ...heritage.body, en: e.target.value } })} />
             </div>
             <input className={inputClass} placeholder="Қызықты деректер, үтірмен бөліңіз" value={heritage.facts.join(", ")} onChange={(e) => setHeritage({ ...heritage, facts: e.target.value.split(",").map((value) => value.trim()) })} />
-            <input className={inputClass} placeholder="Байланысты тағам кодтары: m1, m2" value={heritage.relatedMenuIds.join(", ")} onChange={(e) => setHeritage({ ...heritage, relatedMenuIds: e.target.value.split(",").map((value) => value.trim()) })} />
             <input className={inputClass} placeholder="Фото жолы" value={heritage.image} onChange={(e) => setHeritage({ ...heritage, image: e.target.value })} />
             <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritage")} />
             <div className="flex flex-wrap gap-3">
               <Button type="submit" tone="gold"><Save className="mr-2" size={16} /> Сақтау</Button>
-              {heritage.slug ? <Button onClick={() => deleteHeritage(heritage.slug)} tone="ghost"><Trash2 className="mr-2" size={16} /> Мұраны өшіру</Button> : null}
+              {heritage.slug ? <Button onClick={() => deleteHeritage(heritage.slug)} tone="ghost"><Trash2 className="mr-2" size={16} /> Объектіні өшіру</Button> : null}
             </div>
           </form>
-          <div className="mt-5 grid gap-2">
+          <div className="mt-5 grid gap-2 md:grid-cols-2">
             {db.heritageItems.map((item) => (
               <button key={item.slug} className="rounded-md border border-white/10 bg-white/5 px-3 py-3 text-left hover:border-gold/60" onClick={() => setHeritage(item)}>
                 {item.title.kk} <span className="text-linen/60">/{item.slug}</span>
@@ -301,28 +355,45 @@ export function AdminPanel({ initialDb }: { initialDb: NauatDb }) {
 
         <aside className="grid content-start gap-6">
           <section className="glass rounded-lg p-5">
-            <div className="mb-5 flex items-center gap-3">
-              <UtensilsCrossed className="text-gold" size={22} />
-              <h2 className="font-[var(--font-display)] text-2xl">Мәзір тағамдары</h2>
+            <div className="mb-5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <UtensilsCrossed className="text-gold" size={22} />
+                <h2 className="font-[var(--font-display)] text-2xl">Қазалы мұрасы мәзірі</h2>
+              </div>
+              <Button onClick={() => setHeritageMenuItem(blankHeritageMenuItem)} tone="ghost"><Plus className="mr-2" size={16} /> Жаңа тағам</Button>
             </div>
-            <form className="grid gap-3" onSubmit={saveMenu}>
-              <input className={inputClass} placeholder="Тағам коды" value={menu.id} onChange={(e) => setMenu({ ...menu, id: e.target.value })} />
-              <input className={inputClass} placeholder="Атауы" value={menu.name} onChange={(e) => setMenu({ ...menu, name: e.target.value })} required />
-              <input className={inputClass} placeholder="Категория" value={menu.category} onChange={(e) => setMenu({ ...menu, category: e.target.value })} />
-              <textarea className={`${inputClass} min-h-24`} placeholder="Сипаттама" value={menu.description} onChange={(e) => setMenu({ ...menu, description: e.target.value })} />
-              <input className={inputClass} type="number" placeholder="Баға" value={menu.price} onChange={(e) => setMenu({ ...menu, price: Number(e.target.value) })} />
-              <input className={inputClass} placeholder="Фото жолы" value={menu.image} onChange={(e) => setMenu({ ...menu, image: e.target.value })} />
-              <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "menu")} />
-              <label className="flex items-center gap-3 text-sm text-linen"><input type="checkbox" checked={menu.heritage} onChange={(e) => setMenu({ ...menu, heritage: e.target.checked })} /> Мұра тағамы</label>
+            <form className="grid gap-3" onSubmit={saveHeritageMenuItem}>
+              <div className="grid gap-3 md:grid-cols-2">
+                <input className={inputClass} placeholder="Тағам атауы" value={heritageMenuItem.title} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, title: e.target.value })} required />
+                <input className={inputClass} placeholder="Сілтеме атауы: jankent-set" value={heritageMenuItem.slug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, slug: e.target.value })} />
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <select className={selectClass} value={heritageMenuItem.category} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, category: e.target.value })}>
+                  {heritageMenuCategories.map((category) => <option key={category}>{category}</option>)}
+                </select>
+                <input className={inputClass} type="number" placeholder="Баға" value={heritageMenuItem.price} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, price: Number(e.target.value) })} />
+              </div>
+              <textarea className={`${inputClass} min-h-24`} placeholder="Қысқа сипаттама" value={heritageMenuItem.shortDescription} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, shortDescription: e.target.value })} />
+              <select className={selectClass} value={heritageMenuItem.linkedHeritageSlug} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, linkedHeritageSlug: e.target.value })}>
+                <option value="">Байланысты мұраны таңдаңыз</option>
+                {heritageOptions.map((item) => <option value={item.slug} key={item.slug}>{item.title.kk} /{item.slug}</option>)}
+              </select>
+              <select className={selectClass} value={heritageMenuItem.status} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, status: e.target.value as HeritageMenuItem["status"] })}>
+                <option value="published">Жариялау</option>
+                <option value="draft">Жоба күйі</option>
+                <option value="hidden">Жасыру</option>
+              </select>
+              <input className={inputClass} placeholder="Фото жолы" value={heritageMenuItem.image} onChange={(e) => setHeritageMenuItem({ ...heritageMenuItem, image: e.target.value })} />
+              <input className={`${inputClass} text-sm`} type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && uploadPhoto(e.target.files[0], "heritageMenu")} />
               <div className="flex flex-wrap gap-3">
-                <Button type="submit" tone="gold">Сақтау</Button>
-                {menu.id ? <Button onClick={() => deleteMenu(menu.id)} tone="ghost"><Trash2 className="mr-2" size={16} /> Тағамды өшіру</Button> : null}
+                <Button type="submit" tone="gold">Тағамды сақтау</Button>
+                {heritageMenuItem.id ? <Button onClick={() => deleteHeritageMenuItem(heritageMenuItem.id)} tone="ghost"><Trash2 className="mr-2" size={16} /> Тағамды өшіру</Button> : null}
               </div>
             </form>
             <div className="mt-5 grid gap-2">
-              {db.menuItems.map((item) => (
-                <button key={item.id} className="rounded-md border border-white/10 bg-white/5 px-3 py-3 text-left hover:border-gold/60" onClick={() => setMenu(item)}>
-                  {item.name} <span className="text-linen/60">{item.id}</span>
+              {db.heritageMenuItems.map((item) => (
+                <button key={item.id} className="rounded-md border border-white/10 bg-white/5 px-3 py-3 text-left hover:border-gold/60" onClick={() => setHeritageMenuItem(item)}>
+                  {item.title} <span className="text-linen/60">/{item.linkedHeritageSlug || "байланыс жоқ"}</span>
                 </button>
               ))}
             </div>

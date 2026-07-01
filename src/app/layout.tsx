@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Nauat Мұра 2.0",
-  description: "Қазалы өңірінің тарихы мен дастархан мәдениетін біріктіретін премиум мейрамхана."
+  description: "Қазалы өңірінің тарихы мен дастархан мәдениетін біріктіретін премиум heritage restaurant сайты."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

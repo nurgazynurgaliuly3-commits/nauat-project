@@ -20,23 +20,27 @@ export async function generateStaticParams() {
 
 export default async function HeritagePage({ params, searchParams }: { params: { slug: string }; searchParams: { lang?: Locale } }) {
   const db = await getDb();
-  const item = db.heritageItems.find((entry) => entry.slug === params.slug);
+  const item = db.heritageItems.find((entry) => entry.slug === params.slug && entry.status !== "hidden");
   if (!item) notFound();
 
   const locale: Locale = searchParams.lang && ["kk", "ru", "en"].includes(searchParams.lang) ? searchParams.lang : "kk";
-  const related = db.menuItems.filter((menuItem) => item.relatedMenuIds.includes(menuItem.id));
-  const currentIndex = db.heritageItems.findIndex((entry) => entry.slug === item.slug);
-  const next = db.heritageItems[(currentIndex + 1) % db.heritageItems.length];
+  const related = db.heritageMenuItems.filter((menuItem) => menuItem.linkedHeritageSlug === item.slug && menuItem.status === "published");
+  const visibleItems = db.heritageItems.filter((entry) => entry.status !== "hidden");
+  const currentIndex = visibleItems.findIndex((entry) => entry.slug === item.slug);
+  const next = visibleItems[(currentIndex + 1) % visibleItems.length];
 
   return (
-    <main>
+    <main className="bg-ink text-porcelain">
       <section className="relative min-h-[74svh] overflow-hidden">
         <Image src={item.image} alt={item.title[locale]} fill priority className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/42 to-ink" />
         <div className="relative mx-auto flex min-h-[74svh] max-w-7xl flex-col px-5 py-5">
           <header className="flex items-center justify-between gap-3">
             <Link href="/" className="rounded-md border border-white/15 bg-black/30 px-4 py-3 font-[var(--font-display)] text-xl font-semibold backdrop-blur">Nauat</Link>
-            <Button href="/" tone="ghost">Басты бет</Button>
+            <div className="flex gap-2">
+              <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
+              <Button href="/heritage-menu" tone="gold">Мұра мәзірі</Button>
+            </div>
           </header>
           <div className="flex flex-1 items-end pb-10">
             <div className="max-w-3xl">
@@ -78,21 +82,29 @@ export default async function HeritagePage({ params, searchParams }: { params: {
             </div>
             <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
               <h2 className="font-[var(--font-display)] text-3xl font-semibold">Байланысты тағамдар</h2>
+              <p className="mt-2 text-sm leading-6 text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
               <div className="mt-4 grid gap-3">
-                {related.map((menuItem) => (
+                {related.length ? related.map((menuItem) => (
                   <div className="rounded-md border border-white/10 bg-black/20 p-4" key={menuItem.id}>
-                    <p className="font-semibold text-porcelain">{menuItem.name}</p>
-                    <p className="mt-1 text-sm leading-6 text-linen/75">{menuItem.description}</p>
+                    <p className="font-semibold text-porcelain">{menuItem.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-linen/75">{menuItem.shortDescription}</p>
                     <p className="mt-2 text-gold">{formatPrice(menuItem.price)}</p>
                   </div>
-                ))}
+                )) : (
+                  <p className="rounded-md border border-white/10 bg-black/20 p-4 text-sm text-linen/70">Бұл мұраға байланысты арнайы тағам әлі қосылмаған.</p>
+                )}
               </div>
             </div>
           </div>
 
-          <Button href={`/heritage/${next.slug}`} tone="gold">
-            Келесі мұра <ArrowRight className="ml-2" size={16} />
-          </Button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {next ? (
+              <Button href={`/heritage/${next.slug}`} tone="gold">
+                Келесі мұра <ArrowRight className="ml-2" size={16} />
+              </Button>
+            ) : null}
+            <Button href="/menu" tone="ghost">Негізгі мәзірге өту</Button>
+          </div>
         </article>
 
         <aside className="lg:sticky lg:top-5 lg:self-start">

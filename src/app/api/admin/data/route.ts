@@ -9,5 +9,5 @@ export async function GET() {
 export async function POST(request: Request) {
   const db = (await request.json()) as NauatDb;
   await saveDb(db);
-  return NextResponse.json({ ok: true });
+  return NextResponse.json(await getDb());
 }

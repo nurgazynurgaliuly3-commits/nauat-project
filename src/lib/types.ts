@@ -10,7 +10,22 @@ export type MenuItem = {
   heritage: boolean;
 };
 
+export type HeritageMenuItem = {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  price: number;
+  image: string;
+  shortDescription: string;
+  linkedHeritageSlug: string;
+  status: "draft" | "published" | "hidden";
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type HeritageItem = {
+  id?: string;
   slug: string;
   category: string;
   title: Record<Locale, string>;
@@ -19,6 +34,10 @@ export type HeritageItem = {
   facts: string[];
   relatedMenuIds: string[];
   image: string;
+  galleryImages?: string[];
+  status?: "draft" | "published" | "hidden";
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type SiteSection = {
@@ -41,6 +60,7 @@ export type SiteSettings = {
   heritageSubtitle: string;
   bookingTitle: string;
   bookingText: string;
+  dzumbaMenuUrl: string;
   colors: {
     background: string;
     surface: string;
@@ -64,5 +84,6 @@ export type SiteSettings = {
 export type NauatDb = {
   settings: SiteSettings;
   menuItems: MenuItem[];
+  heritageMenuItems: HeritageMenuItem[];
   heritageItems: HeritageItem[];
 };
