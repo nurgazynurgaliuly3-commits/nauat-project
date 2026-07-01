@@ -6,6 +6,7 @@ import { Button } from "@/components/Buttons";
 import { Logo } from "@/components/Logo";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { QrTools } from "@/components/QrTools";
+import { BodyText, Heading } from "@/components/Typography";
 import { formatPrice, getDb } from "@/lib/storage";
 import type { Locale } from "@/lib/types";
 
@@ -32,7 +33,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
   const next = visibleItems[(currentIndex + 1) % visibleItems.length];
 
   return (
-    <main className="bg-ink pb-24 text-porcelain lg:pb-0">
+    <main className="frontend-type bg-ink pb-24 text-porcelain lg:pb-0">
       <section className="relative min-h-[72svh] overflow-hidden lg:min-h-[74svh]">
         <Image src={item.image} alt={item.title[locale]} fill priority className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-black/78 via-black/48 to-ink" />
@@ -40,15 +41,15 @@ export default async function HeritagePage({ params, searchParams }: { params: {
           <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
             <Logo compact />
             <div className="hidden gap-2 sm:flex">
-              <Button href="/heritage" tone="ghost">Мұра жобасы</Button>
-              <Button href="/heritage-menu" tone="gold">Мұра мәзірі</Button>
+              <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
+              <Button href="/heritage-menu" tone="gold">Қазалы мұрасы мәзірі</Button>
             </div>
           </header>
           <div className="flex flex-1 items-end pb-8">
             <div className="max-w-3xl">
-              <p className="mb-3 inline-flex rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm text-gold">{item.category}</p>
-              <h1 className="font-[var(--font-display)] text-[42px] font-semibold leading-tight sm:text-6xl">{item.title[locale]}</h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-linen sm:text-lg sm:leading-8">{item.short[locale]}</p>
+              <p className="mb-3 inline-flex rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm font-medium text-gold">{item.category}</p>
+              <Heading as="h1" size="article">{item.title[locale]}</Heading>
+              <BodyText className="mt-4 max-w-2xl text-linen">{item.short[locale]}</BodyText>
             </div>
           </div>
         </div>
@@ -62,20 +63,20 @@ export default async function HeritagePage({ params, searchParams }: { params: {
               {(["kk", "ru", "en"] as Locale[]).map((lang) => (
                 <Link
                   key={lang}
-                  className={`shrink-0 rounded-full border px-4 py-2 text-sm ${locale === lang ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/5 text-linen"}`}
+                  className={`shrink-0 rounded-full border px-4 py-2 text-sm font-medium ${locale === lang ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/5 text-linen"}`}
                   href={`/heritage/${item.slug}?lang=${lang}`}
                 >
                   {localeLabels[lang]}
                 </Link>
               ))}
             </div>
-            <h2 className="font-[var(--font-display)] text-3xl font-semibold">Толық мәтін</h2>
-            <p className="mt-4 text-base leading-8 text-linen/90 sm:text-lg sm:leading-9">{item.body[locale]}</p>
+            <Heading as="h2" size="card">Толық мәтін</Heading>
+            <p className="mt-4 text-body text-base text-linen/90 sm:text-lg">{item.body[locale]}</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2 lg:gap-5">
             <div className="rounded-md border border-gold/30 bg-gold/10 p-4 sm:p-5">
-              <h2 className="font-[var(--font-display)] text-3xl font-semibold">Қызықты деректер</h2>
+              <Heading as="h2" size="card">Қызықты деректер</Heading>
               <ul className="mt-4 space-y-3">
                 {item.facts.map((fact) => (
                   <li className="rounded-md border border-white/10 bg-black/20 px-4 py-3 text-sm leading-6 text-linen sm:text-base" key={fact}>{fact}</li>
@@ -83,13 +84,13 @@ export default async function HeritagePage({ params, searchParams }: { params: {
               </ul>
             </div>
             <div className="rounded-md border border-white/10 bg-white/[0.04] p-4 sm:p-5">
-              <h2 className="font-[var(--font-display)] text-3xl font-semibold">Байланысты тағамдар</h2>
-              <p className="mt-2 text-sm leading-6 text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
+              <Heading as="h2" size="card">Байланысты тағамдар</Heading>
+              <p className="mt-2 text-helper !text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
               <div className="mt-4 grid gap-3">
                 {related.length ? related.map((menuItem) => (
                   <div className="rounded-md border border-white/10 bg-black/20 p-4" key={menuItem.id}>
                     <p className="font-semibold text-porcelain">{menuItem.title}</p>
-                    <p className="mt-1 text-sm leading-6 text-linen/75">{menuItem.shortDescription}</p>
+                    <p className="mt-1 text-helper !text-linen/75">{menuItem.shortDescription}</p>
                     <p className="mt-2 text-gold">{formatPrice(menuItem.price)}</p>
                   </div>
                 )) : (
