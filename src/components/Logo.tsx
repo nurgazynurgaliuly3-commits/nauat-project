@@ -10,12 +10,12 @@ export function Logo({ className = "", compact = false }: LogoProps) {
   return (
     <Link href="/" className={`inline-flex items-center ${className}`} aria-label="Nauat басты беті">
       <Image
-        src="/images/nauat-logo.jpg"
+        src="/images/nauat-logo-white.png"
         alt="Nauat"
         width={compact ? 116 : 150}
         height={compact ? 54 : 70}
         priority
-        className="h-auto w-[116px] rounded-sm bg-white/95 object-contain px-2 py-1 shadow-sm sm:w-[150px]"
+        className="h-auto w-[116px] object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.35)] sm:w-[150px]"
       />
     </Link>
   );
