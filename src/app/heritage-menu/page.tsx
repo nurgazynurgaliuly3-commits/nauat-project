@@ -21,12 +21,12 @@ export default async function HeritageMenuPage() {
   const items = db.heritageMenuItems.filter((item) => item.status === "published");
 
   return (
-    <main className="frontend-type min-h-screen bg-ink pb-24 text-porcelain lg:pb-0">
+    <main className="frontend-type min-h-screen bg-[#101711] pb-24 text-porcelain lg:pb-0">
       <section className="relative overflow-hidden border-b border-white/10">
-        <Image src={db.settings.heroImage} alt="Қазалы мұрасы мәзірі" fill priority className="object-cover opacity-35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/72 via-ink/82 to-ink" />
-        <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-5">
-          <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <Image src={db.settings.heroImage} alt="Қазалы мұрасы мәзірі" fill priority className="object-cover opacity-36" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/74 via-[#101711]/86 to-[#101711]" />
+        <div className="relative mx-auto max-w-7xl px-4 py-4 sm:px-5 lg:px-8">
+          <header className="flex items-center justify-between gap-3 rounded-md border border-white/12 bg-black/18 px-3 py-3 backdrop-blur-md">
             <Logo compact />
             <nav className="hidden items-center gap-5 text-sm font-medium text-linen/75 md:flex">
               <Link href="/">Басты бет</Link>
@@ -38,7 +38,7 @@ export default async function HeritageMenuPage() {
             </div>
           </header>
 
-          <div className="max-w-3xl py-12 md:py-24">
+          <div className="max-w-3xl py-14 md:py-24">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm font-medium text-gold">
               <UtensilsCrossed size={16} /> Nauat Мұра 2.0
             </p>
@@ -51,10 +51,10 @@ export default async function HeritageMenuPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-5 lg:py-10">
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-1">
+      <section className="mx-auto max-w-7xl px-4 py-9 sm:px-5 lg:px-8 lg:py-12">
+        <div className="mb-7 flex gap-2 overflow-x-auto pb-1">
           {categories.map((category) => (
-            <span className="shrink-0 rounded-full border border-white/15 bg-white/[0.04] px-4 py-2 text-sm font-medium text-linen/75" key={category}>
+            <span className="shrink-0 rounded-full border border-white/15 bg-white/[0.05] px-4 py-2 text-sm font-medium text-linen/75" key={category}>
               {category}
             </span>
           ))}
@@ -64,8 +64,8 @@ export default async function HeritageMenuPage() {
           {items.map((item) => {
             const heritage = db.heritageItems.find((entry) => entry.slug === item.linkedHeritageSlug);
             return (
-              <article className="overflow-hidden rounded-md border border-white/10 bg-white/[0.04] shadow-glow" key={item.id}>
-                <Image src={item.image} alt={item.title} width={720} height={460} className="h-52 w-full object-cover sm:h-56" />
+              <article className="group overflow-hidden rounded-md border border-white/10 bg-white/[0.045] shadow-glow" key={item.id}>
+                <Image src={item.image} alt={item.title} width={720} height={460} className="h-52 w-full object-cover transition duration-500 group-hover:scale-105 sm:h-56" />
                 <div className="p-4 sm:p-5">
                   <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                     <span className="rounded-full bg-gold px-3 py-1 text-xs font-semibold text-ink">{item.category}</span>

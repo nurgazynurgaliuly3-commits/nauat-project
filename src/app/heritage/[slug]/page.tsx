@@ -33,12 +33,12 @@ export default async function HeritagePage({ params, searchParams }: { params: {
   const next = visibleItems[(currentIndex + 1) % visibleItems.length];
 
   return (
-    <main className="frontend-type bg-ink pb-24 text-porcelain lg:pb-0">
-      <section className="relative min-h-[72svh] overflow-hidden lg:min-h-[74svh]">
+    <main className="frontend-type bg-[#101711] pb-24 text-porcelain lg:pb-0">
+      <section className="relative min-h-[74svh] overflow-hidden">
         <Image src={item.image} alt={item.title[locale]} fill priority className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/78 via-black/48 to-ink" />
-        <div className="relative mx-auto flex min-h-[72svh] max-w-7xl flex-col px-4 py-4 sm:px-5 lg:min-h-[74svh]">
-          <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/78 via-black/48 to-[#101711]" />
+        <div className="relative mx-auto flex min-h-[74svh] max-w-7xl flex-col px-4 py-4 sm:px-5 lg:px-8">
+          <header className="flex items-center justify-between gap-3 rounded-md border border-white/12 bg-black/18 px-3 py-3 backdrop-blur-md">
             <Logo compact />
             <div className="hidden gap-2 sm:flex">
               <Button href="/heritage" tone="ghost">Heritage жобасы</Button>
@@ -55,9 +55,9 @@ export default async function HeritagePage({ params, searchParams }: { params: {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-5 lg:grid-cols-[1fr_340px] lg:gap-8 lg:py-12">
+      <section className="mx-auto grid max-w-7xl gap-6 px-4 py-9 sm:px-5 lg:grid-cols-[1fr_340px] lg:gap-8 lg:px-8 lg:py-12">
         <article className="space-y-5 lg:space-y-8">
-          <div className="rounded-md border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+          <div className="rounded-md border border-white/10 bg-white/[0.045] p-4 sm:p-5">
             <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
               <Globe2 className="mr-1 mt-2 shrink-0 text-gold" size={18} />
               {(["kk", "ru", "en"] as Locale[]).map((lang) => (
@@ -83,7 +83,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
                 ))}
               </ul>
             </div>
-            <div className="rounded-md border border-white/10 bg-white/[0.04] p-4 sm:p-5">
+            <div className="rounded-md border border-white/10 bg-white/[0.045] p-4 sm:p-5">
               <Heading as="h2" size="card">Байланысты тағамдар</Heading>
               <p className="mt-2 text-helper !text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
               <div className="mt-4 grid gap-3">
