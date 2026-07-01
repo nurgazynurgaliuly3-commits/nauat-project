@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight, Globe2 } from "lucide-react";
 import { Button } from "@/components/Buttons";
+import { Logo } from "@/components/Logo";
 import { QrTools } from "@/components/QrTools";
 import { formatPrice, getDb } from "@/lib/storage";
 import type { Locale } from "@/lib/types";
@@ -36,7 +37,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
         <div className="absolute inset-0 bg-gradient-to-b from-black/76 via-black/45 to-ink" />
         <div className="relative mx-auto flex min-h-[74svh] max-w-7xl flex-col px-5 py-5">
           <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-            <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold">Nauat</Link>
+            <Logo compact />
             <div className="flex gap-2">
               <Button href="/heritage" tone="ghost">Мұра жобасы</Button>
               <Button href="/heritage-menu" tone="gold">Мұра мәзірі</Button>

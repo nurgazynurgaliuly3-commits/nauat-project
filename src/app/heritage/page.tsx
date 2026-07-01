@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Landmark, QrCode } from "lucide-react";
 import { Button } from "@/components/Buttons";
+import { Logo } from "@/components/Logo";
 import { getDb } from "@/lib/storage";
 
 export default async function HeritageIndexPage({ searchParams }: { searchParams: { category?: string } }) {
@@ -17,7 +18,7 @@ export default async function HeritageIndexPage({ searchParams }: { searchParams
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-ink/75 to-ink" />
         <div className="relative mx-auto max-w-7xl px-5 py-5">
           <header className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
-            <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold">Nauat</Link>
+            <Logo compact />
             <nav className="hidden items-center gap-5 text-sm text-linen/75 md:flex">
               <Link href="/">Басты бет</Link>
               <Link href="/menu">Негізгі мәзір</Link>

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { AdminPanel } from "@/components/AdminPanel";
 import { getDb } from "@/lib/storage";
 import { Button } from "@/components/Buttons";
+import { Logo } from "@/components/Logo";
 import { getProductionWarnings } from "@/lib/env";
 
 export default async function AdminPage() {
@@ -12,7 +12,7 @@ export default async function AdminPage() {
     <main className="mx-auto max-w-7xl px-5 py-6">
       <header className="mb-8 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-center">
         <div>
-          <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold text-gold">Nauat</Link>
+          <Logo compact />
           <h1 className="mt-3 font-[var(--font-display)] text-5xl font-semibold">Әкімші панелі</h1>
           <p className="mt-2 max-w-2xl text-linen/75">Сайт көрінісі, Қазалы мұрасы мәзірі, мұра объектілері, QR кодтар және Dzumba негізгі мәзір сілтемесі бөлек басқарылады.</p>
         </div>

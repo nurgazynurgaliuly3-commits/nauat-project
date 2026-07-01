@@ -4,6 +4,7 @@ import type { CSSProperties } from "react";
 import { ArrowRight, BookOpen, ExternalLink, Landmark, Languages, QrCode, Sparkles, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/Buttons";
 import { BookingForm } from "@/components/BookingForm";
+import { Logo } from "@/components/Logo";
 import { formatPrice, getDb } from "@/lib/storage";
 
 export default async function HomePage() {
@@ -34,7 +35,7 @@ export default async function HomePage() {
 
         <div className="relative mx-auto flex min-h-[96svh] max-w-7xl flex-col px-5 py-4">
           <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
-            <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold tracking-normal">Nauat</Link>
+            <Logo />
             <nav className="hidden items-center gap-5 text-sm text-[var(--site-muted)] lg:flex">
               <Link href="/">Басты бет</Link>
               <Link href="/menu">Негізгі мәзір</Link>
