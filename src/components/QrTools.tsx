@@ -35,7 +35,7 @@ export function QrTools({ slug, title }: { slug: string; title: string }) {
     pdf.rect(0, 0, 148, 210, "F");
     pdf.setTextColor(18, 15, 11);
     pdf.setFontSize(18);
-    pdf.text("Nauat Мұра 2.0", 18, 24);
+    pdf.text("Nauat Mura 2.0", 18, 24);
     pdf.setFontSize(12);
     pdf.text(title, 18, 36);
     pdf.addImage(dataUrl, "PNG", 29, 52, 90, 90);
@@ -45,7 +45,7 @@ export function QrTools({ slug, title }: { slug: string; title: string }) {
   }
 
   return (
-    <div className="glass rounded-lg p-5 shadow-glow">
+    <div className="rounded-md border border-white/10 bg-white/[0.04] p-5 shadow-glow">
       <div className="mb-4 flex items-center gap-3 text-gold">
         <QrCode size={22} />
         <p className="font-semibold">QR коды</p>

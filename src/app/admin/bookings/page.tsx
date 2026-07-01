@@ -7,9 +7,9 @@ export default async function AdminBookingsPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-6">
-      <header className="mb-8">
-        <Link href="/" className="font-[var(--font-display)] text-2xl font-semibold text-gold">Nauat</Link>
-        <h1 className="mt-3 font-[var(--font-display)] text-4xl font-semibold">Брондау өтінімдері</h1>
+      <header className="mb-8 border-b border-white/10 pb-6">
+        <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold text-gold">Nauat</Link>
+        <h1 className="mt-3 font-[var(--font-display)] text-5xl font-semibold">Брондау өтінімдері</h1>
         <p className="mt-2 text-linen/75">Қонақтар қалдырған өтінімдерді растау, аяқтау, өшіру және ескертпе жазу.</p>
       </header>
       <BookingsManager initialBookings={bookings} />

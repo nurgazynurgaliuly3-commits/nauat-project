@@ -8,9 +8,9 @@ import { formatPrice, getDb } from "@/lib/storage";
 import type { Locale } from "@/lib/types";
 
 const localeLabels: Record<Locale, string> = {
-  kk: "Қазақша",
-  ru: "Орысша",
-  en: "Ағылшынша"
+  kk: "Қазақ тілі",
+  ru: "Русский",
+  en: "English"
 };
 
 export async function generateStaticParams() {
@@ -33,10 +33,10 @@ export default async function HeritagePage({ params, searchParams }: { params: {
     <main className="bg-ink text-porcelain">
       <section className="relative min-h-[74svh] overflow-hidden">
         <Image src={item.image} alt={item.title[locale]} fill priority className="object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/42 to-ink" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/76 via-black/45 to-ink" />
         <div className="relative mx-auto flex min-h-[74svh] max-w-7xl flex-col px-5 py-5">
-          <header className="flex items-center justify-between gap-3">
-            <Link href="/" className="rounded-md border border-white/15 bg-black/30 px-4 py-3 font-[var(--font-display)] text-xl font-semibold backdrop-blur">Nauat</Link>
+          <header className="flex items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold">Nauat</Link>
             <div className="flex gap-2">
               <Button href="/heritage" tone="ghost">Мұра жобасы</Button>
               <Button href="/heritage-menu" tone="gold">Мұра мәзірі</Button>
@@ -44,7 +44,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
           </header>
           <div className="flex flex-1 items-end pb-10">
             <div className="max-w-3xl">
-              <p className="mb-3 inline-flex rounded-md border border-gold/40 bg-black/35 px-3 py-2 text-sm text-gold">{item.category}</p>
+              <p className="mb-3 inline-flex rounded-full border border-gold/45 bg-black/35 px-4 py-2 text-sm text-gold">{item.category}</p>
               <h1 className="font-[var(--font-display)] text-5xl font-semibold leading-tight sm:text-6xl">{item.title[locale]}</h1>
               <p className="mt-4 max-w-2xl text-lg leading-8 text-linen">{item.short[locale]}</p>
             </div>
@@ -54,13 +54,13 @@ export default async function HeritagePage({ params, searchParams }: { params: {
 
       <section className="mx-auto grid max-w-7xl gap-8 px-5 py-12 lg:grid-cols-[1fr_340px]">
         <article className="space-y-8">
-          <div className="glass rounded-lg p-5">
+          <div className="rounded-md border border-white/10 bg-white/[0.04] p-5">
             <div className="mb-5 flex flex-wrap items-center gap-2">
               <Globe2 className="mr-1 text-gold" size={18} />
               {(["kk", "ru", "en"] as Locale[]).map((lang) => (
                 <Link
                   key={lang}
-                  className={`rounded-md border px-3 py-2 text-sm ${locale === lang ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/5 text-linen"}`}
+                  className={`rounded-full border px-4 py-2 text-sm ${locale === lang ? "border-gold bg-gold text-ink" : "border-white/15 bg-white/5 text-linen"}`}
                   href={`/heritage/${item.slug}?lang=${lang}`}
                 >
                   {localeLabels[lang]}
@@ -72,7 +72,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <div className="rounded-lg border border-gold/30 bg-gold/10 p-5">
+            <div className="rounded-md border border-gold/30 bg-gold/10 p-5">
               <h2 className="font-[var(--font-display)] text-3xl font-semibold">Қызықты деректер</h2>
               <ul className="mt-4 space-y-3">
                 {item.facts.map((fact) => (
@@ -80,7 +80,7 @@ export default async function HeritagePage({ params, searchParams }: { params: {
                 ))}
               </ul>
             </div>
-            <div className="rounded-lg border border-white/10 bg-white/[0.04] p-5">
+            <div className="rounded-md border border-white/10 bg-white/[0.04] p-5">
               <h2 className="font-[var(--font-display)] text-3xl font-semibold">Байланысты тағамдар</h2>
               <p className="mt-2 text-sm leading-6 text-linen/65">Бұл тағамдар Қазалы мұрасы мәзіріне жатады, негізгі Dzumba мәзірін алмастырмайды.</p>
               <div className="mt-4 grid gap-3">

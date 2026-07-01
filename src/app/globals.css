@@ -21,7 +21,7 @@ body {
     radial-gradient(circle at 20% 0%, rgba(197, 155, 86, 0.14), transparent 32rem),
     linear-gradient(180deg, #120f0b 0%, #173d31 54%, #120f0b 100%);
   color: #f7f1e7;
-  font-family: Arial, "Segoe UI", sans-serif;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 a {
@@ -48,5 +48,9 @@ select {
 }
 
 .font-\[var\(--font-display\)\] {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Cormorant Garamond", "Playfair Display", Georgia, "Times New Roman", serif;
+}
+
+.font-\[var\(--font-accent\)\] {
+  font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
 }

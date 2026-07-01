@@ -37,11 +37,11 @@ export function BookingForm() {
 
   return (
     <form className="grid gap-3" onSubmit={submit}>
-      <input name="name" className="rounded-md border border-white/15 bg-white/5 px-4 py-3" placeholder="Атыңыз" required />
-      <input name="phone" className="rounded-md border border-white/15 bg-white/5 px-4 py-3" placeholder="Телефон" required />
+      <input name="name" className="rounded-md border border-white/15 bg-white/5 px-4 py-3 outline-none transition focus:border-gold" placeholder="Атыңыз" required />
+      <input name="phone" className="rounded-md border border-white/15 bg-white/5 px-4 py-3 outline-none transition focus:border-gold" placeholder="Телефон" required />
       <div className="grid gap-3 sm:grid-cols-2">
-        <input name="date" className="rounded-md border border-white/15 bg-white/5 px-4 py-3" placeholder="Күні" type="date" required />
-        <input name="guests" className="rounded-md border border-white/15 bg-white/5 px-4 py-3" placeholder="Қонақ саны" type="number" min="1" required />
+        <input name="date" className="rounded-md border border-white/15 bg-white/5 px-4 py-3 outline-none transition focus:border-gold" type="date" required />
+        <input name="guests" className="rounded-md border border-white/15 bg-white/5 px-4 py-3 outline-none transition focus:border-gold" placeholder="Қонақ саны" type="number" min="1" required />
       </div>
       <Button tone="gold" type="submit">{pending ? "Жіберілуде..." : "Өтінім қалдыру"}</Button>
       {message ? <p className="text-sm text-gold">{message}</p> : null}

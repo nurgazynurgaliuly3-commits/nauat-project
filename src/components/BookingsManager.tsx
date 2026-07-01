@@ -54,11 +54,11 @@ export function BookingsManager({ initialBookings }: { initialBookings: Booking[
   }
 
   return (
-    <section className="glass rounded-lg p-4">
+    <section className="rounded-md border border-white/10 bg-white/[0.04] p-4">
       {bookings.length ? (
         <div className="grid gap-3">
           {bookings.map((booking) => (
-            <article className="rounded-lg border border-white/10 bg-white/[0.04] p-4" key={booking.id}>
+            <article className="rounded-md border border-white/10 bg-black/18 p-4" key={booking.id}>
               <div className="grid gap-3 md:grid-cols-[1fr_1fr_0.8fr_0.5fr]">
                 <div>
                   <p className="font-semibold text-porcelain">{booking.name}</p>

@@ -10,11 +10,11 @@ export default async function AdminPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-6">
-      <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      <header className="mb-8 flex flex-col justify-between gap-4 border-b border-white/10 pb-6 md:flex-row md:items-center">
         <div>
-          <Link href="/" className="font-[var(--font-display)] text-2xl font-semibold text-gold">Nauat</Link>
-          <h1 className="mt-3 font-[var(--font-display)] text-4xl font-semibold">Әкімші панелі</h1>
-          <p className="mt-2 max-w-2xl text-linen/75">Мұра объектілерін, Қазалы мұрасы мәзірін, Dzumba негізгі мәзір сілтемесін және QR кодтарды басқару.</p>
+          <Link href="/" className="font-[var(--font-display)] text-3xl font-semibold text-gold">Nauat</Link>
+          <h1 className="mt-3 font-[var(--font-display)] text-5xl font-semibold">Әкімші панелі</h1>
+          <p className="mt-2 max-w-2xl text-linen/75">Сайт көрінісі, Қазалы мұрасы мәзірі, мұра объектілері, QR кодтар және Dzumba негізгі мәзір сілтемесі бөлек басқарылады.</p>
         </div>
         <div className="flex flex-wrap gap-3">
           <Button href="/admin/bookings" tone="gold">Брондаулар</Button>
@@ -22,7 +22,7 @@ export default async function AdminPage() {
         </div>
       </header>
       {warnings.length ? (
-        <section className="mb-6 rounded-lg border border-gold/40 bg-gold/10 p-4 text-sm text-linen">
+        <section className="mb-6 rounded-md border border-gold/40 bg-gold/10 p-4 text-sm text-linen">
           <p className="mb-2 font-semibold text-gold">Production ескертулері</p>
           <ul className="space-y-1">
             {warnings.map((warning) => (
